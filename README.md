@@ -1,5 +1,5 @@
-# Demo Project
-### How to Set up:
+## Demo Project
+#### How to Set up:
 Clone the code to a local directory using:
 ```bash
 git clone git@github.com:lavdiu/DemoProject.git
@@ -12,8 +12,10 @@ docker-compose up -d
 docker exec web.app composer install --no-interaction --no-progress --no-suggest --no-ansi
 ```
 
-### How to Run:
+#### How to Run:
 Navigate to http://localhost:8080/ to see the demo.  
+
+#### Database Access
 To access the Database, use the following credentials:
 ```
 Database Type: MariaDB
