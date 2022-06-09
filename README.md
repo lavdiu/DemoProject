@@ -1,5 +1,5 @@
 # Demo Project
-### How to Setup:
+### How to Set up:
 Clone the code to a local directory using:
 ```bash
 git clone git@github.com:lavdiu/DemoProject.git
