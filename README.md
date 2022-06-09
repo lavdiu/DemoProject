@@ -9,6 +9,7 @@ then, in PowerShell run:
 ```
 docker-compose build
 docker-compose up -d
+docker exec web.app composer install --no-interaction --no-progress --no-suggest --no-ansi
 ```
 
 ### How to Run:

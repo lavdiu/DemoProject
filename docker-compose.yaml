@@ -55,7 +55,5 @@ services:
     restart: always
     networks:
       - app_net
-    command:
-      - /var/www/app_setup/script/install_app.sh
 
 
