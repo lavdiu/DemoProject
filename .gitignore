@@ -1,0 +1,7 @@
+*idea/*
+.idea/
+vendor/
+app/lib/LafShell/pages/*
+.phpunit.result.cache
+./generator_cache/
+./node_modules/
