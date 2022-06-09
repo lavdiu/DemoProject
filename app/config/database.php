@@ -15,14 +15,24 @@ if(isset($_SERVER['SERVER_NAME'])){
     $_server_name = $_SERVER['SERVER_NAME'];
 }
 
-switch ($_server_name) {
-    case "localhost":
-    default:
-        $db_host = 'localhost';
-        $db_username = 'root';
-        $db_password = '';
-        $db_name = 'demoapp';
-        break;
+/**
+ * if running it in a Docker env setup
+ */
+if(getenv('APP_DOCKER_SETUP')){
+    $db_host = getenv('MARIADB_HOST');
+    $db_username = getenv('MARIADB_USER');
+    $db_password = getenv('MARIADB_PASSWORD');
+    $db_name = getenv('MARIADB_DATABASE');
+}else {
+    switch ($_server_name) {
+        case "localhost":
+        default:
+            $db_host = '127.0.0.1';
+            $db_username = 'root';
+            $db_password = '';
+            $db_name = 'demoapp';
+            break;
+    }
 }
 
 /**

@@ -182,7 +182,7 @@ ORDER BY order_tree
 		</ul>
 		<ul class='navbar-nav ms-auto'>
 			<li class='nav-item dropdown'>
-				<a class='nav-link dropdown-toggle' href='javascript:;' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>[".(($person->getNameVal())??'User')."]<b class='caret'></b></a>
+				<a class='nav-link dropdown-toggle' href='javascript:;' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>[".(($person->getNameVal())??'Not Logged in')."]<b class='caret'></b></a>
 				<ul class='dropdown-menu dropdown-menu-end'>
 					<li><a class='dropdown-item' href='?module=account_settings'><i class='fa fa-user-cog'></i> My Account</a></li>
 					<li><a class='dropdown-item' href='?module=change_password'><i class='fa fa-lock'></i> Change password</a></li>

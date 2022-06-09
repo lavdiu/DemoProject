@@ -1,0 +1,25 @@
+#custom settings
+#copy to /etc/mysql/conf.d/
+[mysqld]
+
+
+#custom settings by lavdiu
+sql_mode=""
+query_cache_size = 2560M
+query_cache_type=1
+query_cache_limit=8M
+expire-logs-days=3
+
+
+key_buffer_size        = 1280M
+
+# MySQL/MariaDB default is Latin1, but in Debian we rather default to the full
+# utf8 4-byte character set. See also client.cnf
+character-set-server  = utf8mb4
+collation-server      = utf8mb4_general_ci
+
+# InnoDB is enabled by default with a 10MB datafile in /var/lib/mysql/.
+# Read the manual for more InnoDB related options. There are many!
+# Most important is to give InnoDB 80 % of the system RAM for buffer use:
+# https://mariadb.com/kb/en/innodb-system-variables/#innodb_buffer_pool_size
+innodb_buffer_pool_size = 4G

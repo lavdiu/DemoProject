@@ -1,5 +1,5 @@
-DROP database IF EXISTS demoapp;
-CREATE database demoapp CHARACTER SET UTF8 COLLATE utf8_general_ci;
+#DROP database IF EXISTS demoapp;
+#CREATE database demoapp CHARACTER SET UTF8 COLLATE utf8_general_ci;
 USE demoapp;
 ##DEFAULT CHARSET=UTF8mb4 COLLATE utf8mb4_bin ## for case sensitive databases
 
@@ -21,7 +21,7 @@ INSERT INTO `record_status` VALUES (1,'Active'),(2,'Pending'),(3,'Banned'),(4,'S
 
 
 CREATE TABLE `yes_or_no` (
-  `id` int(2) NOT NULL AUTO_INCREMENT,
+  `id` int(2) NOT NULL,
   `label` varchar(10),
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=UTF8 COLLATE utf8_general_ci;

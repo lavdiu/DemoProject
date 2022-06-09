@@ -1,0 +1,59 @@
+version: '3.9'
+
+volumes:
+  mariadb_data_volume:
+networks:
+  app_net:
+    name: app_net
+    driver: bridge
+
+services:
+  db_svc:
+    build:
+      context: ./.docker/image/mariadb/
+      dockerfile: Dockerfile
+    image: app_db:1
+    container_name: db.app
+    hostname: ${DB_HOSTNAME}
+    environment:
+      - MARIADB_TCP_PORT=${DB_PORT}
+      - MARIADB_USER=${DB_USERNAME}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+      - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MARIADB_ROOT_HOST=${MARIADB_ROOT_HOST}
+      - MARIADB_DATABASE=${DB_NAME}
+    volumes:
+      - mariadb_data_volume:/var/lib/mysql
+      - ./initialize:/docker-entrypoint-initdb.d/
+    restart: always
+    networks:
+      - app_net
+    ports:
+      - 3307:${DB_PORT}
+
+  web_svc:
+    container_name: web.app
+    hostname: ${WEB_HOSTNAME}
+    build:
+      context: ./.docker/image/php/
+      dockerfile: Dockerfile
+    image: app_web:1
+    environment:
+      - MARIADB_USER=${DB_USERNAME}
+      - MARIADB_PASSWORD=${DB_PASSWORD}
+      - MARIADB_DATABASE=${DB_NAME}
+      - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MARIADB_HOST=${DB_HOSTNAME}
+      - APP_DOCKER_SETUP=development
+    volumes:
+      - .:/var/www/html
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      - db_svc
+    restart: always
+    networks:
+      - app_net
+
+
