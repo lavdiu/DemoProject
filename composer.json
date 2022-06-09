@@ -1,0 +1,39 @@
+{
+  "name": "lavdiu/demo-app",
+  "description": "Demo App Project",
+  "type": "project",
+  "license": "MIT",
+  "autoload": {
+    "psr-4": {
+      "Lavdiu\\DemoApp\\": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "Lulzim Avdiu",
+      "email": "lulzimavdiu@gmail.com"
+    }
+  ],
+  "minimum-stability": "beta",
+  "require": {
+    "php": ">=8",
+    "ext-gd": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "ext-pdo": "*",
+    "ext-zip": "*",
+    "guzzlehttp/guzzle": "^7.3",
+    "lavdiu/laf": "dev-master",
+    "phpmailer/phpmailer": "^6.0",
+    "twig/twig": "^3.0"
+  },
+  "config": {
+    "platform": {
+      "php": "8"
+    },
+    "vendor-dir": "vendor",
+    "preferred-install": "dist",
+    "sort-packages": true,
+    "optimize-autoloader": true
+  }
+}

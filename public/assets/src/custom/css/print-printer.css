@@ -1,0 +1,54 @@
+#fatura{
+	font-size:10px;
+	font-family:arial,verdana,tahoma,serif;
+}
+#fatura h2{
+	font-size:18px;
+	font-family:arial,verdana,tahoma,serif;
+	font-weight:bold;
+}
+
+#klienti{
+	font-size:10px;
+	font-family:arial,verdana,tahoma,serif;
+}
+
+#automjeti{
+	font-size:10px;
+	font-family:arial,verdana,tahoma,serif;
+	font-weight:bold;
+}
+#fatura-tabela, #fatura-tabela td, #fatura-tabela th{
+	font-size:10px;
+	font-family:arial,verdana,tahoma,serif;
+}
+
+
+#tbl tr:nth-child(even) {
+    background-color: #efefef;
+} 
+#totalet td, #totalet th{
+	text-align:right;
+	font-size:11px;
+	font-weight:bold;
+}
+
+#fatura-tabela{
+	margin-top:20px;
+}
+
+#mesazhet div{
+	font-size:11px;
+	font-style: italic;
+}
+#pranojDorzoj{
+	margin-top:18px;
+}
+#pranojDorzoj div{
+	text-align:center;
+	font-size:10px;
+	font-weight:bold;
+}
+#fatura{
+	padding-left:40px;
+}

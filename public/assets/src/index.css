@@ -1,0 +1,7 @@
+@import "../../../node_modules/bootstrap/dist/css/bootstrap.min.css";
+@import "./custom/css/css.css";
+@import "./custom/jquerycss/jquery-ui-1.9.2.custom.min.css";
+@import "./custom/css/print-monitor.css";
+@import "./custom/css/print-printer.css";
+@import '../../../node_modules/flatpickr/dist/flatpickr.min.css';
+@import '../../../node_modules/@fortawesome/fontawesome-free/css/all.css';

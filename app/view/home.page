@@ -1,0 +1,20 @@
+<?php
+
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Lavdiu\DemoApp\Factory;
+
+$id = UrlParser::getId();
+
+
+$page = new AdminPage();
+$page->setTitle("<a href='?'>Home</a>");
+$page->setTitleIcon('fa fa-list');
+$page->addComponent(new HtmlContainer("Home Page"));
+
+$html = Factory::GeneralPage();
+$html->addComponent($page);
+echo $html->draw();
+
+

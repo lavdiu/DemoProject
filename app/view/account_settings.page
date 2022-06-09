@@ -1,0 +1,40 @@
+<?php
+
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Page\AdminPage;
+use Lavdiu\DemoApp\Factory;
+
+
+$page = new AdminPage();
+$page->setTitle("My Account")
+    ->setTitleIcon('fa fa-user');
+
+
+
+$g = new PhpGrid('lista_sshfrytezuesve');
+$g->setGridName('lista_sshfrytezuesve')
+    ->setTitle('Lista e shfrytezuesve')
+    ->setRowsPerPage(12)
+    ->setSqlQuery("SELECT id, name, email, created_on FROM person")
+    ->addColumn(new Column('id', 'Person Id', '?mod=123&name={name}&email={email}'))
+    ->addColumn(new Column('name', 'Full Name'))
+    ->addColumn(new Column('email', 'Email Address'))
+    ->addColumn(new Column('created_on', 'Registration Date'))
+    ->addActionButton(new ActionButton('View', '?view={id}', 'fa fa-eye'));
+
+if ($g->isReadyToHandleRequests()) {
+    $g->bootstrap();
+}
+
+
+$page->addComponent(new HtmlContainer($g->draw()));
+
+$html = Factory::GeneralPage();
+$html->addComponent($page);
+echo $html->draw();
+
+

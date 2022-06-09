@@ -1,0 +1,251 @@
+<?php
+
+use Lavdiu\DemoApp\TimeZone;
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+use Lavdiu\DemoApp\Factory;
+use Laf\UI\Container\Div;
+use Laf\UI\Container\TabContainer;
+use Laf\UI\Container\TabItem;
+
+$id = UrlParser::getId();
+$timezone = new TimeZone($id);
+$form = $timezone->getForm();
+
+/**
+	$form->setComponents([])
+		->addComponent($timezone->getIdFormElement())
+		->addComponent($timezone->getDescriptionFormElement());
+*/
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-black text-decoration-none'>TimeZone</a>");
+$page->setTitleIcon('far fa-list-alt');
+
+
+if ($form->isSubmitted()) {
+	$id = $form->processForm();
+	UrlParser::redirectToViewPage($id);
+	exit;
+}
+
+switch (UrlParser::getAction()) {
+	case 'update':
+        $page->setContainerType(ContainerType::TYPE_DEFAULT);
+		$form->setDrawMode(DrawMode::UPDATE);
+		
+/**
+	$form->setComponents([])
+		->addComponent($timezone->getIdFormElement())
+		->addComponent($timezone->getDescriptionFormElement());
+*/
+		$page->addComponent($form);
+
+		$page->addLink(new Link('Cancel', UrlParser::getViewLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+	case 'new':
+	    $page->setContainerType(ContainerType::TYPE_DEFAULT);
+	    
+/**
+	$form->setComponents([])
+		->addComponent($timezone->getIdFormElement())
+		->addComponent($timezone->getDescriptionFormElement());
+*/
+		$form->setDrawMode(DrawMode::INSERT);
+		$page->addComponent($form);
+		$page->addLink(new Link('Cancel', UrlParser::getListLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+	case 'delete':
+		if ($timezone->recordExists()) {
+			if ($timezone->canSoftDelete()) {
+				$timezone->softDelete();
+			} else {
+				$timezone->hardDelete();
+			}
+		}
+		UrlParser::redirectToListPage();
+		break;
+	case 'view':
+	    $page->setContainerType(ContainerType::TYPE_DEFAULT);
+		$form->setDrawMode(DrawMode::VIEW);
+		$page->addComponent($form);
+		$page->addLink(new Link('List', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-success']));
+
+		$dd = new Dropdown('Options', '', 'fa fa-cogs', true);
+		$dd->addCssClass('btn-outline-success')
+			->addCssClass('btn-sm');
+		$newLink = new Link('Update', UrlParser::getUpdateLink(), 'fa fa-edit', ['class' => 'btn btn-sm btn-outline-warning']);
+		$deleteLink = new Link('Delete', UrlParser::getDeleteLink(), 'fa fa-trash', ['class' => 'btn btn-sm btn-outline-danger']);
+		$deleteLink->setConfirmationMessage('Are you sure you want to delete this?');
+
+		$dd->addLink($newLink)
+			->addLink($deleteLink);
+		$page->addLink($dd);
+		$html->addComponent($page);
+
+        $tabContainer = new TabContainer();
+        $panel = new Div();
+        $panel->setContainerType(ContainerType::TYPE_FLUID);
+
+
+        
+		$person = new PhpGrid('person_list');
+        $person->setTitle('time_zone List')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `person`.`id` AS person_id
+		, `person`.`reports_to_id` AS person_reports_to_id
+		, `person_reports_to_id`.`name` AS person_reports_to_id_name
+		, `person`.`name` AS person_name
+		, `person`.`email` AS person_email
+		, `person`.`password` AS person_password
+		, `person`.`created_on` AS person_created_on
+		, `person`.`created_by` AS person_created_by
+		, `person_created_by`.`name` AS person_created_by_name
+		, `person`.`updated_on` AS person_updated_on
+		, `person`.`updated_by` AS person_updated_by
+		, `person_updated_by`.`name` AS person_updated_by_name
+		, `person`.`record_status_id` AS person_record_status_id
+		, `record_status`.`label` AS record_status_label
+		, `person`.`address_id` AS person_address_id
+		, `address`.`address1` AS address_address1
+		, `person`.`time_zone_id` AS person_time_zone_id
+		, `time_zone`.`description` AS time_zone_description
+		, `person`.`profile_picture_id` AS person_profile_picture_id
+		, `document`.`file_name_original` AS document_file_name_original
+		, `person`.`phone` AS person_phone
+		, `person`.`login_cookie` AS person_login_cookie
+		, `person`.`login_ip` AS person_login_ip
+		, `person`.`login_time` AS person_login_time
+		, `person`.`login_duration_minutes` AS person_login_duration_minutes
+		, `person`.`login_agent` AS person_login_agent
+		, `person`.`last_activity` AS person_last_activity
+		, `person`.`activation_code` AS person_activation_code
+		, `person`.`reset_password_code` AS person_reset_password_code
+		, `person`.`reset_password_time` AS person_reset_password_time
+		, `person`.`requires_login_device_approval` AS person_requires_login_device_approval
+		, `yes_or_no`.`label` AS yes_or_no_label
+		, `person`.`person_type_id` AS person_person_type_id
+		, `person_type`.`label` AS person_type_label
+	FROM person person
+	LEFT JOIN `person` `person_reports_to_id` ON `person`.`reports_to_id` = `person_reports_to_id`.`id`
+	LEFT JOIN `person` `person_created_by` ON `person`.`created_by` = `person_created_by`.`id`
+	LEFT JOIN `person` `person_updated_by` ON `person`.`updated_by` = `person_updated_by`.`id`
+	LEFT JOIN `record_status` `record_status` ON `person`.`record_status_id` = `record_status`.`id`
+	LEFT JOIN `address` `address` ON `person`.`address_id` = `address`.`id`
+	LEFT JOIN `time_zone` `time_zone` ON `person`.`time_zone_id` = `time_zone`.`id`
+	LEFT JOIN `document` `document` ON `person`.`profile_picture_id` = `document`.`id`
+	LEFT JOIN `yes_or_no` `yes_or_no` ON `person`.`requires_login_device_approval` = `yes_or_no`.`id`
+	LEFT JOIN `person_type` `person_type` ON `person`.`person_type_id` = `person_type`.`id`
+	WHERE 1=1  AND time_zone.id = ' . ((int)UrlParser::getId()).'
+
+)l1 ');
+
+		$person->addColumn(new Column('person_id', 'Id', true));
+		$person->addColumn(new Column('person_reports_to_id', 'Reports ToId', false));
+		$person->addColumn(new Column('person_reports_to_id_name', 'Reports To', true));
+		$person->addColumn(new Column('person_name', 'Name', true));
+		$person->addColumn(new Column('person_email', 'Email', true));
+		$person->addColumn(new Column('person_password', 'Password', true));
+		$person->addColumn(new Column('person_created_on', 'Created On', true));
+		$person->addColumn(new Column('person_created_by', 'Created ById', false));
+		$person->addColumn(new Column('person_created_by_name', 'Created By', true));
+		$person->addColumn(new Column('person_updated_on', 'Updated On', true));
+		$person->addColumn(new Column('person_updated_by', 'Updated ById', false));
+		$person->addColumn(new Column('person_updated_by_name', 'Updated By', true));
+		$person->addColumn(new Column('person_record_status_id', 'Record StatusId', false));
+		$person->addColumn(new Column('record_status_label', 'Record Status', true));
+		$person->addColumn(new Column('person_address_id', 'AddressId', false));
+		$person->addColumn(new Column('address_address1', 'Address', true));
+		$person->addColumn(new Column('person_time_zone_id', 'Time ZoneId', false));
+		$person->addColumn(new Column('time_zone_description', 'Time Zone', true));
+		$person->addColumn(new Column('person_profile_picture_id', 'Profile PictureId', false));
+		$person->addColumn(new Column('document_file_name_original', 'Profile Picture', true));
+		$person->addColumn(new Column('person_phone', 'Phone', true));
+		$person->addColumn(new Column('person_login_cookie', 'Login Cookie', true));
+		$person->addColumn(new Column('person_login_ip', 'Login Ip', true));
+		$person->addColumn(new Column('person_login_time', 'Login Time', true));
+		$person->addColumn(new Column('person_login_duration_minutes', 'Login Duration Minutes', true));
+		$person->addColumn(new Column('person_login_agent', 'Login Agent', true));
+		$person->addColumn(new Column('person_last_activity', 'Last Activity', true));
+		$person->addColumn(new Column('person_activation_code', 'Activation Code', true));
+		$person->addColumn(new Column('person_reset_password_code', 'Reset Password Code', true));
+		$person->addColumn(new Column('person_reset_password_time', 'Reset Password Time', true));
+		$person->addColumn(new Column('person_requires_login_device_approval', 'Requires Login Device ApprovalId', false));
+		$person->addColumn(new Column('yes_or_no_label', 'Requires Login Device Approval', true));
+		$person->addColumn(new Column('person_person_type_id', 'Person TypeId', false));
+		$person->addColumn(new Column('person_type_label', 'Person Type', true));
+
+		$person->addActionButton(new ActionButton('View', sprintf('?module=%s&action=view&id={time_zone_id}', UrlParser::getModule()), 'fa fa-eye'));
+        $person->addActionButton(new ActionButton('Update', sprintf('?module=%s&action=update&id={time_zone_id}', UrlParser::getModule()), 'fa fa-edit'));
+        $deleteLink = new ActionButton('Delete', sprintf('?module=%s&action=delete&id={time_zone_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('Are you sure you want to delete this?')");
+        $person->addActionButton($deleteLink);
+
+        if ($person->isReadyToHandleRequests()) {
+            $person->bootstrap();
+        }
+
+        
+        $tabItem = new TabItem('Person');
+        $tabItem->addComponent(new HtmlContainer($person->draw()));
+        $tabContainer->addComponent($tabItem);
+
+            
+        $page2 = new AdminPage();
+        $page2->setTitle('Related information')
+            ->addComponent(new HtmlContainer($tabContainer->draw()));
+        $html->addComponent($page2);
+		echo $html->draw();
+		break;
+	case 'list':
+	default:
+		$grid = new PhpGrid('time_zone_list');
+        $grid->setTitle('time_zone List')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `time_zone`.`id` AS time_zone_id
+		, `time_zone`.`description` AS time_zone_description
+	FROM time_zone time_zone
+	
+	WHERE 1=1 
+)l1 ');
+
+		$grid->addColumn(((new Column('time_zone_id', 'Id', true, true, sprintf('?module=%s&action=view&id={time_zone_id}', UrlParser::getModule())))->setInnerElementCssClass('btn btn-sm btn-outline-success'))->setOuterElementCssStyle('width:100px;'));
+		$grid->addColumn(new Column('time_zone_description', 'Description', true));
+
+		$grid->addActionButton(new ActionButton('View', sprintf('?module=%s&action=view&id={time_zone_id}', UrlParser::getModule()), 'fa fa-eye'));
+        $grid->addActionButton(new ActionButton('Update', sprintf('?module=%s&action=update&id={time_zone_id}', UrlParser::getModule()), 'fa fa-edit'));
+        $deleteLink = new ActionButton('Delete', sprintf('?module=%s&action=delete&id={time_zone_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('Are you sure you want to delete this?')");
+        $grid->addActionButton($deleteLink);
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        $page->addLink(new Link('Add new', UrlParser::getNewLink(), 'fa fa-plus-square', [], ['class' => 'btn btn-sm btn-outline-success']));
+		$page->setContainerType(ContainerType::TYPE_FLUID);
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+}

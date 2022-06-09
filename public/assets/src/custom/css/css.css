@@ -1,0 +1,267 @@
+/**{
+	font-family: arial, tahoma, helvetica, serif;
+}
+body{
+    padding:0;
+}*/
+
+
+/*.caret{
+    border-right: 3px solid transparent;
+}*/
+
+
+/*
+table tr{
+	font-size:13px;
+	line-height:1;
+}*/
+/*
+.table td,
+.table th
+.btn {
+
+	font-size:13px;
+}
+
+.table td, .table th{
+	height:2em;
+}
+
+.editable{
+	cursor:pointer;
+	content:" title='Kliko 2 herë për të ndryshuar vlerën' "
+}
+
+
+.textzi{
+	color:#000000;
+	font-size:12px;
+	cursor:pointer;
+}
+
+!*panelet qe mledhen te fatura*!
+.panel-collapse nav:after {
+	font-family: 'Glyphicons Halflings';
+	content: "\e114";
+    float: right;
+    color: grey;
+}
+.panel-collapse nav.collapsed:after {
+    content: "\e080";
+}
+*/
+
+
+
+/*
+
+.r{
+	text-align:right !important;
+	padding-right:2px;
+}
+
+.l{
+	text-align:left;
+	padding-left:2px;
+}
+
+.test{
+	background-color:red;
+	padding:2px 8px 2px 8px;
+	font-weight:bold;
+
+}
+
+
+.gid5{
+	background-color:#eaeaea;
+}
+.gid1{
+	font-weight:bold;
+}
+.gid3{
+	color:darkblue;
+}
+.gid4{
+	color:darkgreen;
+}
+*/
+
+
+.ui-front {
+	z-index: 9999999 !important;
+}
+.ui-autocomplete > li:nth-child(odd){
+	background-color:#ededed;
+}
+.ui-autocomplete {
+	max-height:400px;
+	max-width: 600px;
+	overflow-y:scroll;
+}
+.dropdown-submenu {
+    position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -6px;
+    margin-left:-1px;
+    -webkit-border-radius: 0 6px 6px 6px;
+    -moz-border-radius: 0 6px 6px;
+    border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+    display: block;
+}
+
+.dropdown-submenu>a:after {
+    display: block;
+    content: " ";
+    float: right;
+    width: 0;
+    height: 0;
+    border-color: transparent;
+    border-style: solid;
+    border-width: 5px 0 5px 5px;
+    border-left-color: #ccc;
+    margin-top: 5px;
+    margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+    border-left-color: #fff;
+}
+
+.dropdown-submenu.pull-left {
+    float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+    left: -100%;
+    margin-left: 10px;
+    -webkit-border-radius: 6px 0 6px 6px;
+    -moz-border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
+}
+
+/*
+.badge{
+	color:#ffffff;
+}
+
+
+
+.r{
+	text-align:right;
+}
+.l{
+	text-align:left;
+}
+.c{
+	text-align:center;
+}
+.ui-datepicker-month, .ui-datepicker-year{
+	color:#000000;
+}
+
+
+.padding0{
+	padding:0 !important;
+}
+.veprimet{
+	text-align:right;
+	width:100px;
+}
+.panel-footer{
+	padding:5px !important;
+}
+.panel-heading {
+	padding: 3px 5px 3px 10px !important;;
+}
+.label-rex{
+	background-color:#9edB9E;
+	color:black;
+	font-size:12px;
+	font-weight:normal;
+}
+
+.fatura-oferta-topinfo .badge{
+	color:#ffffff !important;
+}
+.fatura-oferta-topinfo{
+	padding:2px 0px 2px 0px !important;
+}
+.panel-body{
+	padding:2px !important;
+}
+
+*/
+
+
+
+.ac_item > span{
+	padding-left:5px;
+	padding-right:5px;
+
+}
+.kerkoSugjerimi .cmimi,
+.kerkoSugjerimi .gjendja {
+	font-size:14px;
+	font-weight:bold;
+	padding:2px;
+	border-radius:3px;
+	border: solid 1px #aaa;
+}
+.kerkoSugjerimi .cmimi{
+	background-color:#efefef;
+	margin-left:2px;
+}
+.kerkoSugjerimi span{
+	padding:1px;
+}
+.kerkoSugjerimi .numrifurnizuesit,
+.kerkoSugjerimi .numriorg,
+.kerkoSugjerimi .numriprodhuesit,
+.kerkoSugjerimi .numristokut,
+.kerkoSugjerimi .brendi{
+	background-color:#dfdfdf;
+	margin-left:2px;
+	padding:2px;
+	border: solid 1px #555;
+	border-radius:3px;
+}
+.kerkoSugjerimi .numristokut{
+	background-color:#c1e2b3;
+}
+.kerkoSugjerimi .numrifurnizuesit{
+	background-color:#afd9ee;
+}
+.kerkoSugjerimi .brendi{
+	background-color:#8FCEDD;
+}
+.kerkoSugjerimi{
+	font-size:12px;
+	border:solid 1px #aaaaaa;
+	border-radius:3px;
+}
+
+.kerkoSugjerimi .rreshti1{
+	font-weight:bold;
+	font-size:13px;
+}
+.kerkoSugjerimi .rreshti1,
+.kerkoSugjerimi .rreshti2{
+	display:block;
+	width:100%;
+	overflow:hidden;
+}
+.chartContainer{
+	height:300px;
+	padding:2px;
+	border:solid 1px #efefef;
+	text-align:center;
+}

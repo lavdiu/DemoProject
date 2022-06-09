@@ -1,0 +1,213 @@
+<?php
+
+use Lavdiu\DemoApp\Country;
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+use Lavdiu\DemoApp\Factory;
+use Laf\UI\Container\Div;
+use Laf\UI\Container\TabContainer;
+use Laf\UI\Container\TabItem;
+
+$id = UrlParser::getId();
+$country = new Country($id);
+$form = $country->getForm();
+
+/**
+	$form->setComponents([])
+		->addComponent($country->getIdFormElement())
+		->addComponent($country->getIsoFormElement())
+		->addComponent($country->getLabelFormElement())
+		->addComponent($country->getIso3FormElement())
+		->addComponent($country->getNumcodeFormElement())
+		->addComponent($country->getPhonecodeFormElement());
+*/
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-black text-decoration-none'>Country</a>");
+$page->setTitleIcon('far fa-list-alt');
+
+
+if ($form->isSubmitted()) {
+	$id = $form->processForm();
+	UrlParser::redirectToViewPage($id);
+	exit;
+}
+
+switch (UrlParser::getAction()) {
+	case 'update':
+        $page->setContainerType(ContainerType::TYPE_DEFAULT);
+		$form->setDrawMode(DrawMode::UPDATE);
+		
+/**
+	$form->setComponents([])
+		->addComponent($country->getIdFormElement())
+		->addComponent($country->getIsoFormElement())
+		->addComponent($country->getLabelFormElement())
+		->addComponent($country->getIso3FormElement())
+		->addComponent($country->getNumcodeFormElement())
+		->addComponent($country->getPhonecodeFormElement());
+*/
+		$page->addComponent($form);
+
+		$page->addLink(new Link('Cancel', UrlParser::getViewLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+	case 'new':
+	    $page->setContainerType(ContainerType::TYPE_DEFAULT);
+	    
+/**
+	$form->setComponents([])
+		->addComponent($country->getIdFormElement())
+		->addComponent($country->getIsoFormElement())
+		->addComponent($country->getLabelFormElement())
+		->addComponent($country->getIso3FormElement())
+		->addComponent($country->getNumcodeFormElement())
+		->addComponent($country->getPhonecodeFormElement());
+*/
+		$form->setDrawMode(DrawMode::INSERT);
+		$page->addComponent($form);
+		$page->addLink(new Link('Cancel', UrlParser::getListLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+	case 'delete':
+		if ($country->recordExists()) {
+			if ($country->canSoftDelete()) {
+				$country->softDelete();
+			} else {
+				$country->hardDelete();
+			}
+		}
+		UrlParser::redirectToListPage();
+		break;
+	case 'view':
+	    $page->setContainerType(ContainerType::TYPE_DEFAULT);
+		$form->setDrawMode(DrawMode::VIEW);
+		$page->addComponent($form);
+		$page->addLink(new Link('List', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-success']));
+
+		$dd = new Dropdown('Options', '', 'fa fa-cogs', true);
+		$dd->addCssClass('btn-outline-success')
+			->addCssClass('btn-sm');
+		$newLink = new Link('Update', UrlParser::getUpdateLink(), 'fa fa-edit', ['class' => 'btn btn-sm btn-outline-warning']);
+		$deleteLink = new Link('Delete', UrlParser::getDeleteLink(), 'fa fa-trash', ['class' => 'btn btn-sm btn-outline-danger']);
+		$deleteLink->setConfirmationMessage('Are you sure you want to delete this?');
+
+		$dd->addLink($newLink)
+			->addLink($deleteLink);
+		$page->addLink($dd);
+		$html->addComponent($page);
+
+        $tabContainer = new TabContainer();
+        $panel = new Div();
+        $panel->setContainerType(ContainerType::TYPE_FLUID);
+
+
+        
+		$address = new PhpGrid('address_list');
+        $address->setTitle('country List')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `address`.`id` AS address_id
+		, `address`.`address1` AS address_address1
+		, `address`.`address2` AS address_address2
+		, `address`.`city` AS address_city
+		, `address`.`state_province` AS address_state_province
+		, `address`.`postal_code` AS address_postal_code
+		, `address`.`country_id` AS address_country_id
+		, `country`.`label` AS country_label
+		, `address`.`attention` AS address_attention
+	FROM address address
+	LEFT JOIN `country` `country` ON `address`.`country_id` = `country`.`id`
+	WHERE 1=1  AND country.id = ' . ((int)UrlParser::getId()).'
+
+)l1 ');
+
+		$address->addColumn(new Column('address_id', 'Id', true));
+		$address->addColumn(new Column('address_address1', 'Address1', true));
+		$address->addColumn(new Column('address_address2', 'Address2', true));
+		$address->addColumn(new Column('address_city', 'City', true));
+		$address->addColumn(new Column('address_state_province', 'State Province', true));
+		$address->addColumn(new Column('address_postal_code', 'Postal Code', true));
+		$address->addColumn(new Column('address_country_id', 'CountryId', false));
+		$address->addColumn(new Column('country_label', 'Country', true));
+		$address->addColumn(new Column('address_attention', 'Attention', true));
+
+		$address->addActionButton(new ActionButton('View', sprintf('?module=%s&action=view&id={country_id}', UrlParser::getModule()), 'fa fa-eye'));
+        $address->addActionButton(new ActionButton('Update', sprintf('?module=%s&action=update&id={country_id}', UrlParser::getModule()), 'fa fa-edit'));
+        $deleteLink = new ActionButton('Delete', sprintf('?module=%s&action=delete&id={country_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('Are you sure you want to delete this?')");
+        $address->addActionButton($deleteLink);
+
+        if ($address->isReadyToHandleRequests()) {
+            $address->bootstrap();
+        }
+
+        
+        $tabItem = new TabItem('Address');
+        $tabItem->addComponent(new HtmlContainer($address->draw()));
+        $tabContainer->addComponent($tabItem);
+
+            
+        $page2 = new AdminPage();
+        $page2->setTitle('Related information')
+            ->addComponent(new HtmlContainer($tabContainer->draw()));
+        $html->addComponent($page2);
+		echo $html->draw();
+		break;
+	case 'list':
+	default:
+		$grid = new PhpGrid('country_list');
+        $grid->setTitle('country List')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `country`.`id` AS country_id
+		, `country`.`iso` AS country_iso
+		, `country`.`label` AS country_label
+		, `country`.`iso3` AS country_iso3
+		, `country`.`numcode` AS country_numcode
+		, `country`.`phonecode` AS country_phonecode
+	FROM country country
+	
+	WHERE 1=1 
+)l1 ');
+
+		$grid->addColumn(((new Column('country_id', 'Id', true, true, sprintf('?module=%s&action=view&id={country_id}', UrlParser::getModule())))->setInnerElementCssClass('btn btn-sm btn-outline-success'))->setOuterElementCssStyle('width:100px;'));
+		$grid->addColumn(new Column('country_iso', 'Iso', true));
+		$grid->addColumn(new Column('country_label', 'Label', true));
+		$grid->addColumn(new Column('country_iso3', 'Iso3', true));
+		$grid->addColumn(new Column('country_numcode', 'Numcode', true));
+		$grid->addColumn(new Column('country_phonecode', 'Phonecode', true));
+
+		$grid->addActionButton(new ActionButton('View', sprintf('?module=%s&action=view&id={country_id}', UrlParser::getModule()), 'fa fa-eye'));
+        $grid->addActionButton(new ActionButton('Update', sprintf('?module=%s&action=update&id={country_id}', UrlParser::getModule()), 'fa fa-edit'));
+        $deleteLink = new ActionButton('Delete', sprintf('?module=%s&action=delete&id={country_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('Are you sure you want to delete this?')");
+        $grid->addActionButton($deleteLink);
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        $page->addLink(new Link('Add new', UrlParser::getNewLink(), 'fa fa-plus-square', [], ['class' => 'btn btn-sm btn-outline-success']));
+		$page->setContainerType(ContainerType::TYPE_FLUID);
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+}

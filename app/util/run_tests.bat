@@ -1,0 +1,1 @@
+./vendor/bin/phpunit --bootstrap ./app/config/config.php ./tests/

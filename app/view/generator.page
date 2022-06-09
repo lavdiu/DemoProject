@@ -1,0 +1,171 @@
+<?php
+
+use Laf\Database\Table;
+use Laf\Generator\ClassGenerator;
+use Laf\Generator\DatabaseGenerator;
+use Laf\Generator\PageGenerator;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\Settings;
+use Laf\Util\UrlParser;
+use Lavdiu\DemoApp\Factory;
+use Lavdiu\DemoApp\RoutingTable;
+
+$mainPage = Factory::GeneralPage();
+
+$db = new DatabaseGenerator(__DIR__ . '/../lib/');
+$library_path = __DIR__ . '/../../src/';
+$db->setConfig([
+    'namespace' => Settings::get('project.package_name'),
+    'base_class_dir' => $library_path . '/Base',
+    'class_dir' => $library_path . '/',
+    'page_dir' => __DIR__ . '/../../generator_cache/pages/',
+    'live_page_dir' => __DIR__ . '/../view/',
+    'rewrite_class' => false
+]);
+
+$databaseTables = array_column($db->getTables(), 'table_name');
+
+$table = new Table(filter_input(INPUT_GET, 'table'));
+
+switch (filter_input(INPUT_GET, 'action')) {
+    case 'generate_base_class_all':
+        foreach ($databaseTables as $databaseTable) {
+            $table = new Table($databaseTables);
+            $c = new ClassGenerator($table, $db->getConfig());
+            $c->saveBaseClassToFile();
+        }
+        header('location:?module=' . UrlParser::getModule());
+        exit;
+        break;
+    case 'generate_base_class':
+        $c = new ClassGenerator($table, $db->getConfig());
+        $c->saveBaseClassToFile();
+        header('location:?module=' . UrlParser::getModule());
+        exit;
+        break;
+    case 'generate_class':
+        $c = new ClassGenerator($table, $db->getConfig());
+        $c->saveClassToFile();
+        header('location:?module=' . UrlParser::getModule());
+        exit;
+        break;
+    case 'generate_page':
+        $p = new PageGenerator($table, $db->getConfig());
+        if (filter_input(INPUT_GET, 'live_dir') == 'yes') {
+            $p->setWriteOnLiveDirectory(true);
+        }
+        $p->savePageToFile();
+        header('location:?module=' . UrlParser::getModule());
+        exit;
+        break;
+    case 'generate_menu_entry':
+        $rt = RoutingTable::findOne([
+            'page_file' => $table->getName() . '.page'
+        ]);
+        if (!$rt) {
+            $rt = new RoutingTable();
+        }
+        $rt->setPageFileVal($table->getName() . '.page')
+            ->setUniqueNameVal($table->getName())
+            ->setLabelVal(ucfirst(str_replace('_', ' ', $table->getName())))
+            ->setIsVisibleVal(1)
+            ->setOrdinalVal(9)
+            ->setRequiresLoginVal(0)
+            ->store();
+        RoutingTable::buildAndCacheMenu();
+        header('location:?module=' . UrlParser::getModule());
+        exit;
+        break;
+    case 'generate_all':
+        $c = new ClassGenerator($table, $db->getConfig());
+        $c->saveBaseClassToFile()
+            ->saveClassToFile();
+        $p = new PageGenerator($table, $db->getConfig());
+        if (filter_input(INPUT_GET, 'live_dir') == 'yes') {
+            $p->setWriteOnLiveDirectory(true);
+        }
+        $p->savePageToFile();
+
+        $rt = RoutingTable::findOne([
+            'page_file' => $table->getName() . '.page'
+        ]);
+        if (!$rt) {
+            $rt = new RoutingTable();
+        }
+        $rt->setPageFileVal($table->getName() . '.page')
+            ->setUniqueNameVal($table->getName())
+            ->setLabelVal(ucfirst(str_replace('_', ' ', $table->getName())))
+            ->setIsVisibleVal(1)
+            ->setOrdinalVal(9)
+            ->setRequiresLoginVal(1)
+            ->store();
+        RoutingTable::buildAndCacheMenu();
+
+        header('location:?module=' . UrlParser::getModule());
+        exit;
+        break;
+}
+
+
+$html = "
+<div class='container-fluid'>
+<div class='table-responsive'>
+<table class='table table-striped table-hover table-sm'>
+<tr>
+    <th>Table Name</th>
+    <th>Base Class <a href='?module=" . UrlParser::getModule() . "&action=generate_base_class_all' onclick=\"return confirm('Sure?');\" class='btn btn-secondary btn-sm' title='Generate this Base Class only'><i class='far fa-play-circle'></i></a></th>
+    <th>Util Class</th>
+    <th>Page File</th>
+    <th>Menu Entry</th>
+    <th class='text-right' style='width: 40px'>Generate all</th>
+</tr>
+";
+foreach ($databaseTables as $databaseTable) {
+    $table = new Table($databaseTable);
+    $tableGenerator = new ClassGenerator($table, $db->getConfig());
+    $pageGenerator = new PageGenerator($table, $db->getConfig());
+    $pageGenerator->setWriteOnLiveDirectory(true);
+
+    $rt = RoutingTable::findOne([
+            'page_file' => $table->getName() . '.page']
+    );
+
+    $html .= "
+    <tr>
+        <td>{$databaseTable}</td>
+        <td>" . ($tableGenerator->baseClassFileExists() ? "<span class='btn btn-sm btn-outline-success' title='File exists'>Yes</span>" : "<span class='btn btn-sm btn-outline-danger' title='File does not exist'>No</span>")
+        . " <a href='?module=" . UrlParser::getModule() . "&action=generate_base_class&table={$table->getName()}' onclick=\"return confirm('Sure?');\" class='btn btn-secondary btn-sm' title='Generate this Base Class only'><i class='far fa-play-circle'></i></a></td>
+        
+        <td>" . ($tableGenerator->classFileExists() ? "<span class='btn btn-sm btn-outline-success' title='File exists'>Yes</span>" : "<span class='btn btn-sm btn-outline-danger' title='File does not exist'>No</span>")
+        . " <a href='?module=" . UrlParser::getModule() . "&action=generate_class&table={$table->getName()}' onclick=\"return confirm('Sure?');\" class='btn " . ($tableGenerator->classFileExists() ? 'btn-danger' : 'btn-secondary') . " btn-sm' title='Generate this Class only'><i class='far fa-play-circle'></i></a></td>
+        
+        <td>" . ($pageGenerator->pageFileExists() ? "<span class='btn btn-sm btn-outline-success' title='File exists'>Yes</span>" : "<span class='btn btn-sm btn-outline-danger' title='File does not exist'>No</span>")
+        . " <a href='?module=" . UrlParser::getModule() . "&action=generate_page&table={$table->getName()}' onclick=\"return confirm('Sure?');\" class='btn btn-secondary btn-sm' title='Generate this page only in cache dir'><i class='far fa-play-circle'></i></a>"
+        . " <a href='?module=" . UrlParser::getModule() . "&action=generate_page&table={$table->getName()}&live_dir=yes' onclick=\"return confirm('Sure? Will overwrite the existing page file');\" class='btn btn-danger btn-sm' title='Generate this page only in live dir'><i class='far fa-play-circle'></i></a>"
+        . "</td>
+        
+        <td>" . ($rt ? "<span class='btn btn-sm btn-outline-success' title='File exists'>Yes</span>" : "<span class='btn btn-sm btn-outline-danger' title='File does not exist'>No</span>")
+        . " <a href='?module=" . UrlParser::getModule() . "&action=generate_menu_entry&table={$table->getName()}' onclick=\"return confirm('Sure?');\" class='btn btn-secondary btn-sm' title='Populate menu entry'><i class='far fa-play-circle'></i></a></td>
+        
+        <td class='text-right'><a href='?module=" . UrlParser::getModule() . "&action=generate_all&table={$table->getName()}&live_dir=yes'  onclick=\"return confirm('Sure?');\" class='btn btn-secondary btn-sm' title='Generate everything for this table'><i class='far fa-play-circle'></i></a></td>
+    </tr>
+    ";
+}
+
+
+$html .= "
+</table>
+</div>
+</div>
+";
+
+
+$page = new AdminPage();
+$page->setTitle('Generate Classes and Pages')
+    ->setContainerType(ContainerType::TYPE_FLUID)
+    ->setTitleIcon('fa fa-cog');
+$page->addComponent(new HtmlContainer($html));
+$mainPage->addComponent($page);
+echo $mainPage->draw();
