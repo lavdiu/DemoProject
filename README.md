@@ -12,7 +12,7 @@ docker-compose up -d
 ```
 
 ### How to Run:
-Navigate to http://localhost:8080/public/ to see the demo.  
+Navigate to http://localhost:8080/ to see the demo.  
 To access the Database, use the following credentials:
 ```
 Database Type: MariaDB
