@@ -336,25 +336,31 @@ ALTER TABLE person ADD CONSTRAINT demoapp_person_profile_pic_id_fk FOREIGN KEY (
 ##
 ## insert default entries in routing table
 ##
-INSERT INTO routing_table (id, unique_name, label, page_file, is_default, is_visible, ordinal, requires_login) VALUES
-(1, 'home', 'Home', 'home.page', 1, 0, 0, 0)
-,(2, 'register', 'Register', 'register.page', 0, 0, 0, 0)
-,(3, 'login', 'Login', 'login.page', 0, 0, 0, 0)
-,(4, 'logout', 'Log Out', 'login.page', 0, 0, 0, 0)
-,(5, 'reset_password', 'Reset Password', 'reset_password.page', 0, 0, 0, 0)
-,(6, 'change_password', 'Change Password', 'change_password.page', 0, 0, 0, 1)
-,(7, 'confirm_registration', 'Confirm Registration', 'register.page', 0, 0, 0, 0)
-,(8, '404', '404', 'error.page', 0, 0, 0, 0)
-,(9, 'account_settings', 'Account Settings', 'account_settings.page', 0, 0, 0, 1)
-,(10, 'person_list', 'Person List', 'person_list.page', 0, 0, 0, 0)
-,(11, 'group_list', 'Group List', 'person_list.page', 0, 0, 0, 0)
-,(12, 'role_list', 'Role List', 'group_list.page', 0, 0, 0, 0)
-,(13, 'self_update', 'Self Update', 'self_update.page', 0, 0, 0, 0)
-,(14, 'process_list', 'Process List', 'process_list.page', 0, 0, 0, 0)
-,(15, 'grid_list', 'Grid List', 'grid_list.page', 0, 0, 0, 0)
-,(16, 'generator', 'Generator', 'generator.page', 0, 1, 999999, 0)
-,(17, 'reload_menu', 'reload_menu', 'reload_menu.page', 0, 0, 0, 0)
-,(18, 'routing_table', 'Routing table', 'routing_table.page', 0, 1, 9, 0)
+INSERT INTO routing_table (id, unique_name, label, page_file, is_default, is_visible, ordinal, requires_login, icon) VALUES
+(1, 'home', 'Home', 'home.page', 1, 0, 0, 1, null)
+, (2, 'settings', 'Settings', null, 0, 1, 9, 1, 'fa fa-cog')
+;
+
+
+INSERT INTO routing_table (id, parent_id, unique_name, label, page_file, is_default, is_visible, ordinal, requires_login) VALUES
+
+ (10,null, 'register', 'Register', 'register.page', 0, 0, 0, 0)
+,(11,null, 'login', 'Login', 'login.page', 0, 0, 0, 0)
+,(12,null, 'logout', 'Log Out', 'login.page', 0, 0, 0, 0)
+,(13,null, 'reset_password', 'Reset Password', 'reset_password.page', 0, 0, 0, 0)
+,(14,null, 'change_password', 'Change Password', 'change_password.page', 0, 0, 0, 1)
+,(15,null, 'confirm_registration', 'Confirm Registration', 'register.page', 0, 0, 0, 0)
+,(16,null, '404', '404', 'error.page', 0, 0, 0, 0)
+,(17,null, 'account_settings', 'Account Settings', 'account_settings.page', 0, 0, 0, 1)
+,(18,2, 'person_list', 'Person List', 'person_list.page', 0, 0, 0, 1)
+,(19,2, 'group_list', 'Group List', 'person_list.page', 0, 0, 0, 1)
+,(20,2, 'role_list', 'Role List', 'group_list.page', 0, 0, 0, 1)
+,(21,2, 'self_update', 'Self Update', 'self_update.page', 0, 0, 0, 1)
+,(22,2, 'process_list', 'Process List', 'process_list.page', 0, 0, 0, 1)
+,(23,2, 'grid_list', 'Grid List', 'grid_list.page', 0, 0, 0, 1)
+,(24,2, 'generator', 'Generator', 'generator.page', 0, 1, 999999, 1)
+,(25,null, 'reload_menu', 'reload_menu', 'reload_menu.page', 0, 0, 0, 1)
+,(26,2, 'routing_table', 'Routing table', 'routing_table.page', 0, 1, 9, 1)
 ;
 
 

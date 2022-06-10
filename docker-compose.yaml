@@ -24,7 +24,7 @@ services:
       - MARIADB_DATABASE=${DB_NAME}
     volumes:
       - mariadb_data_volume:/var/lib/mysql
-      - ./initialize:/docker-entrypoint-initdb.d/
+      - ./migrations/init:/docker-entrypoint-initdb.d/
     restart: always
     networks:
       - app_net

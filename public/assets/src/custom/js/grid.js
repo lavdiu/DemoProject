@@ -1,7 +1,7 @@
 class Grid {
     constructor(name) {
         if (name.length < 1)
-            throw "Error attempting to initialize Grid with missing name : " + name;
+            throw "Error attempting to migrations Grid with missing name : " + name;
         this._id = null
         this._name = name;
         this._currentPage = 1;
@@ -154,7 +154,7 @@ class Grid {
 
     /**
      * Retreive JSON file Async mode
-     * once downloaded, call initialize
+     * once downloaded, call migrations
      */
     fetchJson() {
         var self = this;

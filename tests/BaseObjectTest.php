@@ -1,7 +1,6 @@
 <?php
 
-use LafShell\DummyTable;
-use PHPUnit\Framework\TestCase;
+
 
 class BaseObjectTest extends TestCase
 {
