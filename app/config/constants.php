@@ -14,7 +14,7 @@ function setupConstants(): void
 
     $settings->setProperty('servername', filter_input(INPUT_SERVER, 'SERVER_NAME'));
     $settings->setProperty('protocol', filter_input(INPUT_SERVER, 'HTTPS') != '' || filter_input(INPUT_SERVER, 'SERVER_PORT') == 443 ? 'https' : 'http');
-    $settings->setProperty('server_port', $_SERVER['SERVER_PORT'] != 80 ? ':' . $_SERVER['SERVER_PORT'] : '');
+    $settings->setProperty('server_port', $_SERVER['SERVER_PORT']??'' != 80 ? ':' . $_SERVER['SERVER_PORT']??'' : '');
     $settings->setProperty('homepage', $settings->getProperty('protocol') . '://' . $settings->getProperty('servername') . $settings->getProperty('server_port') . '/');
     $settings->setProperty('homepage_path', dirname($_SERVER['PHP_SELF']) . '/');
     $settings->setProperty('login_url', $settings->getProperty('homepage') . $settings->getProperty('homepage_path') . '?module=login');
