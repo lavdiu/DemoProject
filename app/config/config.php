@@ -3,9 +3,9 @@
 use Laf\Util\Settings;
 
 if (function_exists('ob_gzhandler'))
-		ob_start();
+    ob_start();
 else
-	ob_start();
+    ob_start();
 date_default_timezone_set("Europe/Tirane");
 session_name("SEEUDemoApp");
 session_start();
@@ -29,3 +29,8 @@ require_once(__DIR__ . '/constants.php');
  */
 $settings = Settings::getInstance();
 $settings->setProperty('debug_level', 0);
+
+if (in_array(Settings::get('servername'), ['localhost'])) {
+    error_reporting(E_ALL);
+    ini_set("display_errors", 1);
+}
