@@ -21,7 +21,7 @@ password: administrator
 ```
 
 #### Database Access
-To access the Database, use the following credentials:
+To explore the database structure and data, use the following credentials:
 ```
 Database Type: MariaDB
 Host: localhost

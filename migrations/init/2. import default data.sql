@@ -68,8 +68,9 @@ INSERT INTO routing_table (id, parent_id, unique_name, label, page_file, is_defa
 ,(null, 17, 'backups_hourly', 'Hourly Backups',  'backups_hourly.page', 0, 1, 30, 1, 'fas fa-copy')
 ,(null, 17, 'sql_error_list', 'SQL Errors',  'sql_error.page', 0, 1, 40, 1, 'fas fa-cog')
 ,(null, 17, 'routing_table', 'Routing table', 'routing_table.page', 0, 1, 50, 1, 'fas fa-clipboard-list')
-,(null, 17, 'generator', 'Code Generator', 'generator.page', 0, 1, 60, 1, 'fas fa-play')
+,(null, 17, 'generator', 'Code Generator', 'generator.page', 0, 1, 60, 1, 'fas fa-code')
 ,(null, 17, 'self_update', 'Check for updates', 'self_update.php', 0, 1, 70, 1, 'fas fa-sync')
+,(null, 17, 'run_query', 'Run Custom Query', 'run_query.php', 0, 1, 70, 1, 'fas fa-play')
 ;
 
 
