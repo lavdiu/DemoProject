@@ -105,6 +105,18 @@ class BasePerson extends Database\BaseObject
 			->setRequired(false)
 			->setMaxLength(50)
 			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeVarchar());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("username")
+			->setLabel("Username")
+			->setPlaceHolder("Username")
+			->setRequired(false)
+			->setMaxLength(50)
+			->setAutoIncrement(false)
 			->setUnique(true)
 			->setType(new Database\Field\TypeVarchar());
 		$this->getTable()->addUniqueField($field);
@@ -292,18 +304,6 @@ class BasePerson extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("last_activity")
-			->setLabel("Last Activity")
-			->setPlaceHolder("Last Activity")
-			->setRequired(false)
-			->setMaxLength(255)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeDateTime());
-		$this->getTable()->addField($field);
-		$field = null;
-
-		$field = (new Field())
 			->setName("activation_code")
 			->setLabel("Activation Code")
 			->setPlaceHolder("Activation Code")
@@ -352,6 +352,18 @@ class BasePerson extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
+			->setName("modulet")
+			->setLabel("Modulet")
+			->setPlaceHolder("Modulet")
+			->setRequired(false)
+			->setMaxLength(65535)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeText());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
 			->setName("person_type_id")
 			->setLabel("Person Type")
 			->setPlaceHolder("Person Type")
@@ -363,6 +375,66 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addField($field);
 		$field = null;
 
+		$field = (new Field())
+			->setName("last_activity")
+			->setLabel("Last Activity")
+			->setPlaceHolder("Last Activity")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeDateTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("job_title")
+			->setLabel("Job Title")
+			->setPlaceHolder("Job Title")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeVarchar());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("work_location")
+			->setLabel("Work Location")
+			->setPlaceHolder("Work Location")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeVarchar());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("time_restricted_login_start_time")
+			->setLabel("Time Restricted Login Start Time")
+			->setPlaceHolder("Time Restricted Login Start Time")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("time_restricted_login_end_time")
+			->setLabel("Time Restricted Login End Time")
+			->setPlaceHolder("Time Restricted Login End Time")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
 		$this->getTable()->setPrimaryKey($pk);
 
 		/**
@@ -371,7 +443,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("reports_to_id"))
-				->setKeyName('demoapp_person_reports_to_id_fk')
+				->setKeyName('demoapp_lafperson_reports_to_id_fk')
 				->setReferencingTable("person")
 				->setReferencingField("id")
 		);
@@ -379,7 +451,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("created_by"))
-				->setKeyName('demoapp_person_created_by_id_fk')
+				->setKeyName('demoapp_lafperson_created_by_id_fk')
 				->setReferencingTable("person")
 				->setReferencingField("id")
 		);
@@ -387,7 +459,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("updated_by"))
-				->setKeyName('demoapp_person_updated_by_id_fk')
+				->setKeyName('demoapp_lafperson_updated_by_id_fk')
 				->setReferencingTable("person")
 				->setReferencingField("id")
 		);
@@ -395,7 +467,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("record_status_id"))
-				->setKeyName('demoapp_person_record_status_id_fk')
+				->setKeyName('demoapp_lafperson_record_status_id_fk')
 				->setReferencingTable("record_status")
 				->setReferencingField("id")
 		);
@@ -403,7 +475,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("address_id"))
-				->setKeyName('demoapp_person_record_address_id_fk')
+				->setKeyName('demoapp_lafperson_record_address_id_fk')
 				->setReferencingTable("address")
 				->setReferencingField("id")
 		);
@@ -411,7 +483,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("time_zone_id"))
-				->setKeyName('demoapp_person_tz_id_fk')
+				->setKeyName('demoapp_lafperson_tz_id_fk')
 				->setReferencingTable("time_zone")
 				->setReferencingField("id")
 		);
@@ -419,7 +491,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("profile_picture_id"))
-				->setKeyName('demoapp_person_profile_pic_id_fk')
+				->setKeyName('demoapp_lafperson_profile_pic_id_fk')
 				->setReferencingTable("document")
 				->setReferencingField("id")
 		);
@@ -427,7 +499,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("requires_login_device_approval"))
-				->setKeyName('demoapp_person_requires_login_device_approval_fk')
+				->setKeyName('demoapp_lafperson_requires_login_device_approval_fk')
 				->setReferencingTable("yes_or_no")
 				->setReferencingField("id")
 		);
@@ -435,7 +507,7 @@ class BasePerson extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("person_type_id"))
-				->setKeyName('asm_laf_person_p_type_id_fk')
+				->setKeyName('demoapp_lafperson_p_type_id_fk')
 				->setReferencingTable("person_type")
 				->setReferencingField("id")
 		);
@@ -613,6 +685,46 @@ class BasePerson extends Database\BaseObject
 	public function getEmailFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
 		return $this->getField("email")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Username value
+	 * @param mixed $value
+	 * @return Person
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setUsernameVal($value = null)
+	{
+		$this->setFieldValue("username", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Username value
+	 * @return mixed
+	 */
+	public function getUsernameVal()
+	{
+		return $this->getFieldValue("username");
+	}
+
+	/**
+	 * Get Username field reference
+	 * @return Field
+	 */
+	public function getUsernameFld()
+	{
+		return $this->getField("username");
+	}
+
+	/**
+	 * Get Username form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getUsernameFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("username")->getFormElement($formElementOverride);
 	}
 
 	/**
@@ -1294,46 +1406,6 @@ class BasePerson extends Database\BaseObject
 	}
 
 	/**
-	 * Set Last Activity value
-	 * @param mixed $value
-	 * @return Person
-	 * @throws InvalidForeignKeyValue
-	 */
-	public function setLastActivityVal($value = null)
-	{
-		$this->setFieldValue("last_activity", $value);
-		return static::returnLeafClass();
-	}
-
-	/**
-	 * Get Last Activity value
-	 * @return mixed
-	 */
-	public function getLastActivityVal()
-	{
-		return $this->getFieldValue("last_activity");
-	}
-
-	/**
-	 * Get Last Activity field reference
-	 * @return Field
-	 */
-	public function getLastActivityFld()
-	{
-		return $this->getField("last_activity");
-	}
-
-	/**
-	 * Get Last Activity form element reference
-	 * @param FormElementInterface|null $formElementOverride
-	 * @return ComponentInterface
-	 */
-	public function getLastActivityFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
-	{
-		return $this->getField("last_activity")->getFormElement($formElementOverride);
-	}
-
-	/**
 	 * Set Activation Code value
 	 * @param mixed $value
 	 * @return Person
@@ -1507,6 +1579,46 @@ class BasePerson extends Database\BaseObject
 	}
 
 	/**
+	 * Set Modulet value
+	 * @param mixed $value
+	 * @return Person
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setModuletVal($value = null)
+	{
+		$this->setFieldValue("modulet", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Modulet value
+	 * @return mixed
+	 */
+	public function getModuletVal()
+	{
+		return $this->getFieldValue("modulet");
+	}
+
+	/**
+	 * Get Modulet field reference
+	 * @return Field
+	 */
+	public function getModuletFld()
+	{
+		return $this->getField("modulet");
+	}
+
+	/**
+	 * Get Modulet form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getModuletFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("modulet")->getFormElement($formElementOverride);
+	}
+
+	/**
 	 * Set Person Type value
 	 * @param mixed $value
 	 * @return Person
@@ -1557,6 +1669,206 @@ class BasePerson extends Database\BaseObject
 		} else {
 			return new \Lavdiu\DemoApp\PersonType();
 		}
+	}
+
+	/**
+	 * Set Last Activity value
+	 * @param mixed $value
+	 * @return Person
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setLastActivityVal($value = null)
+	{
+		$this->setFieldValue("last_activity", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Last Activity value
+	 * @return mixed
+	 */
+	public function getLastActivityVal()
+	{
+		return $this->getFieldValue("last_activity");
+	}
+
+	/**
+	 * Get Last Activity field reference
+	 * @return Field
+	 */
+	public function getLastActivityFld()
+	{
+		return $this->getField("last_activity");
+	}
+
+	/**
+	 * Get Last Activity form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getLastActivityFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("last_activity")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Job Title value
+	 * @param mixed $value
+	 * @return Person
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setJobTitleVal($value = null)
+	{
+		$this->setFieldValue("job_title", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Job Title value
+	 * @return mixed
+	 */
+	public function getJobTitleVal()
+	{
+		return $this->getFieldValue("job_title");
+	}
+
+	/**
+	 * Get Job Title field reference
+	 * @return Field
+	 */
+	public function getJobTitleFld()
+	{
+		return $this->getField("job_title");
+	}
+
+	/**
+	 * Get Job Title form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getJobTitleFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("job_title")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Work Location value
+	 * @param mixed $value
+	 * @return Person
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setWorkLocationVal($value = null)
+	{
+		$this->setFieldValue("work_location", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Work Location value
+	 * @return mixed
+	 */
+	public function getWorkLocationVal()
+	{
+		return $this->getFieldValue("work_location");
+	}
+
+	/**
+	 * Get Work Location field reference
+	 * @return Field
+	 */
+	public function getWorkLocationFld()
+	{
+		return $this->getField("work_location");
+	}
+
+	/**
+	 * Get Work Location form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getWorkLocationFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("work_location")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Time Restricted Login Start Time value
+	 * @param mixed $value
+	 * @return Person
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setTimeRestrictedLoginStartTimeVal($value = null)
+	{
+		$this->setFieldValue("time_restricted_login_start_time", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Time Restricted Login Start Time value
+	 * @return mixed
+	 */
+	public function getTimeRestrictedLoginStartTimeVal()
+	{
+		return $this->getFieldValue("time_restricted_login_start_time");
+	}
+
+	/**
+	 * Get Time Restricted Login Start Time field reference
+	 * @return Field
+	 */
+	public function getTimeRestrictedLoginStartTimeFld()
+	{
+		return $this->getField("time_restricted_login_start_time");
+	}
+
+	/**
+	 * Get Time Restricted Login Start Time form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getTimeRestrictedLoginStartTimeFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("time_restricted_login_start_time")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Time Restricted Login End Time value
+	 * @param mixed $value
+	 * @return Person
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setTimeRestrictedLoginEndTimeVal($value = null)
+	{
+		$this->setFieldValue("time_restricted_login_end_time", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Time Restricted Login End Time value
+	 * @return mixed
+	 */
+	public function getTimeRestrictedLoginEndTimeVal()
+	{
+		return $this->getFieldValue("time_restricted_login_end_time");
+	}
+
+	/**
+	 * Get Time Restricted Login End Time field reference
+	 * @return Field
+	 */
+	public function getTimeRestrictedLoginEndTimeFld()
+	{
+		return $this->getField("time_restricted_login_end_time");
+	}
+
+	/**
+	 * Get Time Restricted Login End Time form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getTimeRestrictedLoginEndTimeFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("time_restricted_login_end_time")->getFormElement($formElementOverride);
 	}
 
 	/**

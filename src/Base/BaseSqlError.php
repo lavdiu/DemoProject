@@ -9,18 +9,18 @@ use Laf\Database\PrimaryKey;
 use Laf\Database\ForeignKey;
 use Laf\UI\Form\FormElementInterface;
 use Laf\UI\ComponentInterface;
-use Lavdiu\DemoApp\ChangeLog;
+use Lavdiu\DemoApp\SqlError;
 use Laf\Exception\InvalidForeignKeyValue;
 
 /**
- * Class BaseChangeLog
+ * Class BaseSqlError
  * @package Lavdiu\DemoApp\Base
- * Base Class for Table change_log
- * Basic definition of the fields and relationship with the Database Table change_log
+ * Base Class for Table sql_error
+ * Basic definition of the fields and relationship with the Database Table sql_error
  * This class will be auto-generated every time there is a schema change
  * Please do not add code here. Instead add your code at the main class one directory above
  */
-class BaseChangeLog extends Database\BaseObject
+class BaseSqlError extends Database\BaseObject
 {
 	/**
 	 * Instructors constructor.
@@ -56,7 +56,7 @@ class BaseChangeLog extends Database\BaseObject
 	 */
 	private function buildClass()
 	{
-		$this->setTable(new Table('change_log'));
+		$this->setTable(new Table('sql_error'));
 		/**
 		 * Generate field data
 		 */
@@ -75,21 +75,45 @@ class BaseChangeLog extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("laf_schema_object")
-			->setLabel("Laf Schema Object")
-			->setPlaceHolder("Laf Schema Object")
+			->setName("error_message")
+			->setLabel("Error Message")
+			->setPlaceHolder("Error Message")
 			->setRequired(false)
-			->setMaxLength(255)
+			->setMaxLength(65535)
 			->setAutoIncrement(false)
 			->setUnique(false)
-			->setType(new Database\Field\TypeInteger());
+			->setType(new Database\Field\TypeText());
 		$this->getTable()->addField($field);
 		$field = null;
 
 		$field = (new Field())
-			->setName("field_name")
-			->setLabel("Field Name")
-			->setPlaceHolder("Field Name")
+			->setName("sql_query")
+			->setLabel("Sql Query")
+			->setPlaceHolder("Sql Query")
+			->setRequired(false)
+			->setMaxLength(65535)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeText());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("exception_trace")
+			->setLabel("Exception Trace")
+			->setPlaceHolder("Exception Trace")
+			->setRequired(false)
+			->setMaxLength(65535)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeText());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("page_file")
+			->setLabel("Page File")
+			->setPlaceHolder("Page File")
 			->setRequired(false)
 			->setMaxLength(255)
 			->setAutoIncrement(false)
@@ -99,26 +123,26 @@ class BaseChangeLog extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("old_value")
-			->setLabel("Old Value")
-			->setPlaceHolder("Old Value")
+			->setName("line_number")
+			->setLabel("Line Number")
+			->setPlaceHolder("Line Number")
 			->setRequired(false)
-			->setMaxLength(65535)
+			->setMaxLength(255)
 			->setAutoIncrement(false)
 			->setUnique(false)
-			->setType(new Database\Field\TypeText());
+			->setType(new Database\Field\TypeInteger());
 		$this->getTable()->addField($field);
 		$field = null;
 
 		$field = (new Field())
-			->setName("new_value")
-			->setLabel("New Value")
-			->setPlaceHolder("New Value")
+			->setName("person_id")
+			->setLabel("Person")
+			->setPlaceHolder("Person")
 			->setRequired(false)
-			->setMaxLength(65535)
+			->setMaxLength(255)
 			->setAutoIncrement(false)
 			->setUnique(false)
-			->setType(new Database\Field\TypeText());
+			->setType(new Database\Field\TypeInteger());
 		$this->getTable()->addField($field);
 		$field = null;
 
@@ -134,37 +158,17 @@ class BaseChangeLog extends Database\BaseObject
 		$this->getTable()->addField($field);
 		$field = null;
 
-		$field = (new Field())
-			->setName("created_by")
-			->setLabel("Created By")
-			->setPlaceHolder("Created By")
-			->setRequired(false)
-			->setMaxLength(255)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeInteger());
-		$this->getTable()->addField($field);
-		$field = null;
-
 		$this->getTable()->setPrimaryKey($pk);
 
 		/**
 		 * Generating Foreign keys
 		 */
-		$this->getTable()->addForeignKey(
-			(new ForeignKey())
-				->setField($this->getTable()->getField("created_by"))
-				->setKeyName('demoapp_lafchange_log_person_fd_idx')
-				->setReferencingTable("person")
-				->setReferencingField("id")
-		);
-
 	}
 
 	/**
 	 * Set Id value
 	 * @param mixed $value
-	 * @return ChangeLog
+	 * @return SqlError
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setIdVal($value = null)
@@ -202,169 +206,249 @@ class BaseChangeLog extends Database\BaseObject
 	}
 
 	/**
-	 * Set Laf Schema Object value
+	 * Set Error Message value
 	 * @param mixed $value
-	 * @return ChangeLog
+	 * @return SqlError
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setLafSchemaObjectVal($value = null)
+	public function setErrorMessageVal($value = null)
 	{
-		$this->setFieldValue("laf_schema_object", $value);
+		$this->setFieldValue("error_message", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Laf Schema Object value
+	 * Get Error Message value
 	 * @return mixed
 	 */
-	public function getLafSchemaObjectVal()
+	public function getErrorMessageVal()
 	{
-		return $this->getFieldValue("laf_schema_object");
+		return $this->getFieldValue("error_message");
 	}
 
 	/**
-	 * Get Laf Schema Object field reference
+	 * Get Error Message field reference
 	 * @return Field
 	 */
-	public function getLafSchemaObjectFld()
+	public function getErrorMessageFld()
 	{
-		return $this->getField("laf_schema_object");
+		return $this->getField("error_message");
 	}
 
 	/**
-	 * Get Laf Schema Object form element reference
+	 * Get Error Message form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getLafSchemaObjectFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getErrorMessageFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("laf_schema_object")->getFormElement($formElementOverride);
+		return $this->getField("error_message")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set Field Name value
+	 * Set Sql Query value
 	 * @param mixed $value
-	 * @return ChangeLog
+	 * @return SqlError
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setFieldNameVal($value = null)
+	public function setSqlQueryVal($value = null)
 	{
-		$this->setFieldValue("field_name", $value);
+		$this->setFieldValue("sql_query", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Field Name value
+	 * Get Sql Query value
 	 * @return mixed
 	 */
-	public function getFieldNameVal()
+	public function getSqlQueryVal()
 	{
-		return $this->getFieldValue("field_name");
+		return $this->getFieldValue("sql_query");
 	}
 
 	/**
-	 * Get Field Name field reference
+	 * Get Sql Query field reference
 	 * @return Field
 	 */
-	public function getFieldNameFld()
+	public function getSqlQueryFld()
 	{
-		return $this->getField("field_name");
+		return $this->getField("sql_query");
 	}
 
 	/**
-	 * Get Field Name form element reference
+	 * Get Sql Query form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getFieldNameFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getSqlQueryFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("field_name")->getFormElement($formElementOverride);
+		return $this->getField("sql_query")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set Old Value value
+	 * Set Exception Trace value
 	 * @param mixed $value
-	 * @return ChangeLog
+	 * @return SqlError
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setOldValueVal($value = null)
+	public function setExceptionTraceVal($value = null)
 	{
-		$this->setFieldValue("old_value", $value);
+		$this->setFieldValue("exception_trace", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Old Value value
+	 * Get Exception Trace value
 	 * @return mixed
 	 */
-	public function getOldValueVal()
+	public function getExceptionTraceVal()
 	{
-		return $this->getFieldValue("old_value");
+		return $this->getFieldValue("exception_trace");
 	}
 
 	/**
-	 * Get Old Value field reference
+	 * Get Exception Trace field reference
 	 * @return Field
 	 */
-	public function getOldValueFld()
+	public function getExceptionTraceFld()
 	{
-		return $this->getField("old_value");
+		return $this->getField("exception_trace");
 	}
 
 	/**
-	 * Get Old Value form element reference
+	 * Get Exception Trace form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getOldValueFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getExceptionTraceFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("old_value")->getFormElement($formElementOverride);
+		return $this->getField("exception_trace")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set New Value value
+	 * Set Page File value
 	 * @param mixed $value
-	 * @return ChangeLog
+	 * @return SqlError
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setNewValueVal($value = null)
+	public function setPageFileVal($value = null)
 	{
-		$this->setFieldValue("new_value", $value);
+		$this->setFieldValue("page_file", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get New Value value
+	 * Get Page File value
 	 * @return mixed
 	 */
-	public function getNewValueVal()
+	public function getPageFileVal()
 	{
-		return $this->getFieldValue("new_value");
+		return $this->getFieldValue("page_file");
 	}
 
 	/**
-	 * Get New Value field reference
+	 * Get Page File field reference
 	 * @return Field
 	 */
-	public function getNewValueFld()
+	public function getPageFileFld()
 	{
-		return $this->getField("new_value");
+		return $this->getField("page_file");
 	}
 
 	/**
-	 * Get New Value form element reference
+	 * Get Page File form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getNewValueFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getPageFileFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("new_value")->getFormElement($formElementOverride);
+		return $this->getField("page_file")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Line Number value
+	 * @param mixed $value
+	 * @return SqlError
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setLineNumberVal($value = null)
+	{
+		$this->setFieldValue("line_number", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Line Number value
+	 * @return mixed
+	 */
+	public function getLineNumberVal()
+	{
+		return $this->getFieldValue("line_number");
+	}
+
+	/**
+	 * Get Line Number field reference
+	 * @return Field
+	 */
+	public function getLineNumberFld()
+	{
+		return $this->getField("line_number");
+	}
+
+	/**
+	 * Get Line Number form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getLineNumberFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("line_number")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Person value
+	 * @param mixed $value
+	 * @return SqlError
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setPersonIdVal($value = null)
+	{
+		$this->setFieldValue("person_id", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Person value
+	 * @return mixed
+	 */
+	public function getPersonIdVal()
+	{
+		return $this->getFieldValue("person_id");
+	}
+
+	/**
+	 * Get Person field reference
+	 * @return Field
+	 */
+	public function getPersonIdFld()
+	{
+		return $this->getField("person_id");
+	}
+
+	/**
+	 * Get Person form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getPersonIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("person_id")->getFormElement($formElementOverride);
 	}
 
 	/**
 	 * Set Created On value
 	 * @param mixed $value
-	 * @return ChangeLog
+	 * @return SqlError
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setCreatedOnVal($value = null)
@@ -402,59 +486,6 @@ class BaseChangeLog extends Database\BaseObject
 	}
 
 	/**
-	 * Set Created By value
-	 * @param mixed $value
-	 * @return ChangeLog
-	 * @throws InvalidForeignKeyValue
-	 */
-	public function setCreatedByVal($value = null)
-	{
-		$this->setFieldValue("created_by", $value);
-		return static::returnLeafClass();
-	}
-
-	/**
-	 * Get Created By value
-	 * @return mixed
-	 */
-	public function getCreatedByVal()
-	{
-		return $this->getFieldValue("created_by");
-	}
-
-	/**
-	 * Get Created By field reference
-	 * @return Field
-	 */
-	public function getCreatedByFld()
-	{
-		return $this->getField("created_by");
-	}
-
-	/**
-	 * Get Created By form element reference
-	 * @param FormElementInterface|null $formElementOverride
-	 * @return ComponentInterface
-	 */
-	public function getCreatedByFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
-	{
-		return $this->getField("created_by")->getFormElement($formElementOverride);
-	}
-
-	/**
-	 * Get Person Object
-	 * @return \Lavdiu\DemoApp\Person
-	 */
-	public function getCreatedByObj()
-	{
-		if (is_numeric($this->getCreatedByVal())) {
-			return new \Lavdiu\DemoApp\Person($this->getCreatedByVal());
-		} else {
-			return new \Lavdiu\DemoApp\Person();
-		}
-	}
-
-	/**
 	 * Get all rows as associative array
 	 * @return string[]
 	 * @throws \Exception
@@ -471,7 +502,7 @@ class BaseChangeLog extends Database\BaseObject
 	 * Gets all rows and instantiates the object for all
 	 * Then returns an array of all objects
 	 * Please be careful, this can be bad for large tables
-	 * @return ChangeLog[]
+	 * @return SqlError[]
 	 * @throws \Exception
 	 */
 	public function listAllObjects(): array

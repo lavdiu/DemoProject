@@ -87,6 +87,18 @@ class BaseTicket extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
+			->setName("ticket_group_id")
+			->setLabel("Ticket Group")
+			->setPlaceHolder("Ticket Group")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
 			->setName("body")
 			->setLabel("Body")
 			->setPlaceHolder("Body")
@@ -242,11 +254,31 @@ class BaseTicket extends Database\BaseObject
 		$this->getTable()->addField($field);
 		$field = null;
 
+		$field = (new Field())
+			->setName("expected_completion_date")
+			->setLabel("Expected Completion Date")
+			->setPlaceHolder("Expected Completion Date")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeDate());
+		$this->getTable()->addField($field);
+		$field = null;
+
 		$this->getTable()->setPrimaryKey($pk);
 
 		/**
 		 * Generating Foreign keys
 		 */
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("ticket_group_id"))
+				->setKeyName('ticket_ticket_group_fk9')
+				->setReferencingTable("ticket_group")
+				->setReferencingField("id")
+		);
+
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("created_by"))
@@ -391,6 +423,59 @@ class BaseTicket extends Database\BaseObject
 	public function getSubjectFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
 		return $this->getField("subject")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Ticket Group value
+	 * @param mixed $value
+	 * @return Ticket
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setTicketGroupIdVal($value = null)
+	{
+		$this->setFieldValue("ticket_group_id", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Ticket Group value
+	 * @return mixed
+	 */
+	public function getTicketGroupIdVal()
+	{
+		return $this->getFieldValue("ticket_group_id");
+	}
+
+	/**
+	 * Get Ticket Group field reference
+	 * @return Field
+	 */
+	public function getTicketGroupIdFld()
+	{
+		return $this->getField("ticket_group_id");
+	}
+
+	/**
+	 * Get Ticket Group form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getTicketGroupIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("ticket_group_id")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Get TicketGroup Object
+	 * @return \Lavdiu\DemoApp\TicketGroup
+	 */
+	public function getTicketGroupIdObj()
+	{
+		if (is_numeric($this->getTicketGroupIdVal())) {
+			return new \Lavdiu\DemoApp\TicketGroup($this->getTicketGroupIdVal());
+		} else {
+			return new \Lavdiu\DemoApp\TicketGroup();
+		}
 	}
 
 	/**
@@ -1015,6 +1100,46 @@ class BaseTicket extends Database\BaseObject
 		} else {
 			return new \Lavdiu\DemoApp\TicketPriority();
 		}
+	}
+
+	/**
+	 * Set Expected Completion Date value
+	 * @param mixed $value
+	 * @return Ticket
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setExpectedCompletionDateVal($value = null)
+	{
+		$this->setFieldValue("expected_completion_date", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Expected Completion Date value
+	 * @return mixed
+	 */
+	public function getExpectedCompletionDateVal()
+	{
+		return $this->getFieldValue("expected_completion_date");
+	}
+
+	/**
+	 * Get Expected Completion Date field reference
+	 * @return Field
+	 */
+	public function getExpectedCompletionDateFld()
+	{
+		return $this->getField("expected_completion_date");
+	}
+
+	/**
+	 * Get Expected Completion Date form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getExpectedCompletionDateFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("expected_completion_date")->getFormElement($formElementOverride);
 	}
 
 	/**

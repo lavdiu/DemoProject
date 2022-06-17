@@ -23,14 +23,16 @@ if(getenv('APP_DOCKER_SETUP')){
     $db_username = getenv('MARIADB_USER');
     $db_password = getenv('MARIADB_PASSWORD');
     $db_name = getenv('MARIADB_DATABASE');
+    $db_port = getenv('MARIADB_TCP_PORT');
 }else {
     switch ($_server_name) {
         case "localhost":
         default:
             $db_host = '127.0.0.1';
-            $db_username = 'root';
-            $db_password = '';
+            $db_username = 'app';
+            $db_password = 'app';
             $db_name = 'demoapp';
+            $db_port = '3307';
             break;
     }
 }
@@ -43,3 +45,4 @@ $settings->setProperty('database.hostname', $db_host);
 $settings->setProperty('database.database_name', $db_name);
 $settings->setProperty('database.username', $db_username);
 $settings->setProperty('database.password', $db_password);
+$settings->setProperty('database.port', $db_port);

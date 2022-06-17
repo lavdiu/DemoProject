@@ -207,6 +207,66 @@ class BaseRoutingTable extends Database\BaseObject
 		$this->getTable()->addField($field);
 		$field = null;
 
+		$field = (new Field())
+			->setName("viewable_for_all")
+			->setLabel("Viewable For All")
+			->setPlaceHolder("Viewable For All")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("created_by")
+			->setLabel("Created By")
+			->setPlaceHolder("Created By")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("created_on")
+			->setLabel("Created On")
+			->setPlaceHolder("Created On")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeDateTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("updated_by")
+			->setLabel("Updated By")
+			->setPlaceHolder("Updated By")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("updated_on")
+			->setLabel("Updated On")
+			->setPlaceHolder("Updated On")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeDateTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
 		$this->getTable()->setPrimaryKey($pk);
 
 		/**
@@ -215,16 +275,64 @@ class BaseRoutingTable extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("parent_id"))
-				->setKeyName('demoapp_routing_table_parent_id_fk1')
+				->setKeyName('demoapp_lafrouting_table_parent_id_fk1')
 				->setReferencingTable("routing_table")
 				->setReferencingField("id")
 		);
 
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
-				->setField($this->getTable()->getField("is_visible"))
-				->setKeyName('demoapp_routing_table_visible_ix2')
+				->setField($this->getTable()->getField("is_default"))
+				->setKeyName('demoapp_lafroutingtable_is_default_fk4')
 				->setReferencingTable("yes_or_no")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("is_visible"))
+				->setKeyName('demoapp_lafrouting_table_visible_ix2')
+				->setReferencingTable("yes_or_no")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("is_standalone"))
+				->setKeyName('demoapp_lafroutingtable_is_standalone_fk4')
+				->setReferencingTable("yes_or_no")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("requires_login"))
+				->setKeyName('demoapp_lafroutingtable_requires_login_fk4')
+				->setReferencingTable("yes_or_no")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("viewable_for_all"))
+				->setKeyName('demoapp_lafroutingtable_viewable_fk4')
+				->setReferencingTable("yes_or_no")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("created_by"))
+				->setKeyName('demoapp_lafroutingtable_created_by_fk4')
+				->setReferencingTable("person")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("updated_by"))
+				->setKeyName('demoapp_lafroutingtable_updated_by_fk4')
+				->setReferencingTable("person")
 				->setReferencingField("id")
 		);
 
@@ -524,6 +632,19 @@ class BaseRoutingTable extends Database\BaseObject
 	}
 
 	/**
+	 * Get YesOrNo Object
+	 * @return \Lavdiu\DemoApp\YesOrNo
+	 */
+	public function getIsDefaultObj()
+	{
+		if (is_numeric($this->getIsDefaultVal())) {
+			return new \Lavdiu\DemoApp\YesOrNo($this->getIsDefaultVal());
+		} else {
+			return new \Lavdiu\DemoApp\YesOrNo();
+		}
+	}
+
+	/**
 	 * Set Is Visible value
 	 * @param mixed $value
 	 * @return RoutingTable
@@ -657,6 +778,19 @@ class BaseRoutingTable extends Database\BaseObject
 	}
 
 	/**
+	 * Get YesOrNo Object
+	 * @return \Lavdiu\DemoApp\YesOrNo
+	 */
+	public function getIsStandaloneObj()
+	{
+		if (is_numeric($this->getIsStandaloneVal())) {
+			return new \Lavdiu\DemoApp\YesOrNo($this->getIsStandaloneVal());
+		} else {
+			return new \Lavdiu\DemoApp\YesOrNo();
+		}
+	}
+
+	/**
 	 * Set Requires Login value
 	 * @param mixed $value
 	 * @return RoutingTable
@@ -697,6 +831,19 @@ class BaseRoutingTable extends Database\BaseObject
 	}
 
 	/**
+	 * Get YesOrNo Object
+	 * @return \Lavdiu\DemoApp\YesOrNo
+	 */
+	public function getRequiresLoginObj()
+	{
+		if (is_numeric($this->getRequiresLoginVal())) {
+			return new \Lavdiu\DemoApp\YesOrNo($this->getRequiresLoginVal());
+		} else {
+			return new \Lavdiu\DemoApp\YesOrNo();
+		}
+	}
+
+	/**
 	 * Set Actions value
 	 * @param mixed $value
 	 * @return RoutingTable
@@ -734,6 +881,245 @@ class BaseRoutingTable extends Database\BaseObject
 	public function getActionsFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
 		return $this->getField("actions")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Viewable For All value
+	 * @param mixed $value
+	 * @return RoutingTable
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setViewableForAllVal($value = null)
+	{
+		$this->setFieldValue("viewable_for_all", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Viewable For All value
+	 * @return mixed
+	 */
+	public function getViewableForAllVal()
+	{
+		return $this->getFieldValue("viewable_for_all");
+	}
+
+	/**
+	 * Get Viewable For All field reference
+	 * @return Field
+	 */
+	public function getViewableForAllFld()
+	{
+		return $this->getField("viewable_for_all");
+	}
+
+	/**
+	 * Get Viewable For All form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getViewableForAllFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("viewable_for_all")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Get YesOrNo Object
+	 * @return \Lavdiu\DemoApp\YesOrNo
+	 */
+	public function getViewableForAllObj()
+	{
+		if (is_numeric($this->getViewableForAllVal())) {
+			return new \Lavdiu\DemoApp\YesOrNo($this->getViewableForAllVal());
+		} else {
+			return new \Lavdiu\DemoApp\YesOrNo();
+		}
+	}
+
+	/**
+	 * Set Created By value
+	 * @param mixed $value
+	 * @return RoutingTable
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setCreatedByVal($value = null)
+	{
+		$this->setFieldValue("created_by", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Created By value
+	 * @return mixed
+	 */
+	public function getCreatedByVal()
+	{
+		return $this->getFieldValue("created_by");
+	}
+
+	/**
+	 * Get Created By field reference
+	 * @return Field
+	 */
+	public function getCreatedByFld()
+	{
+		return $this->getField("created_by");
+	}
+
+	/**
+	 * Get Created By form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getCreatedByFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("created_by")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Get Person Object
+	 * @return \Lavdiu\DemoApp\Person
+	 */
+	public function getCreatedByObj()
+	{
+		if (is_numeric($this->getCreatedByVal())) {
+			return new \Lavdiu\DemoApp\Person($this->getCreatedByVal());
+		} else {
+			return new \Lavdiu\DemoApp\Person();
+		}
+	}
+
+	/**
+	 * Set Created On value
+	 * @param mixed $value
+	 * @return RoutingTable
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setCreatedOnVal($value = null)
+	{
+		$this->setFieldValue("created_on", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Created On value
+	 * @return mixed
+	 */
+	public function getCreatedOnVal()
+	{
+		return $this->getFieldValue("created_on");
+	}
+
+	/**
+	 * Get Created On field reference
+	 * @return Field
+	 */
+	public function getCreatedOnFld()
+	{
+		return $this->getField("created_on");
+	}
+
+	/**
+	 * Get Created On form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getCreatedOnFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("created_on")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Updated By value
+	 * @param mixed $value
+	 * @return RoutingTable
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setUpdatedByVal($value = null)
+	{
+		$this->setFieldValue("updated_by", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Updated By value
+	 * @return mixed
+	 */
+	public function getUpdatedByVal()
+	{
+		return $this->getFieldValue("updated_by");
+	}
+
+	/**
+	 * Get Updated By field reference
+	 * @return Field
+	 */
+	public function getUpdatedByFld()
+	{
+		return $this->getField("updated_by");
+	}
+
+	/**
+	 * Get Updated By form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getUpdatedByFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("updated_by")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Get Person Object
+	 * @return \Lavdiu\DemoApp\Person
+	 */
+	public function getUpdatedByObj()
+	{
+		if (is_numeric($this->getUpdatedByVal())) {
+			return new \Lavdiu\DemoApp\Person($this->getUpdatedByVal());
+		} else {
+			return new \Lavdiu\DemoApp\Person();
+		}
+	}
+
+	/**
+	 * Set Updated On value
+	 * @param mixed $value
+	 * @return RoutingTable
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setUpdatedOnVal($value = null)
+	{
+		$this->setFieldValue("updated_on", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Updated On value
+	 * @return mixed
+	 */
+	public function getUpdatedOnVal()
+	{
+		return $this->getFieldValue("updated_on");
+	}
+
+	/**
+	 * Get Updated On field reference
+	 * @return Field
+	 */
+	public function getUpdatedOnFld()
+	{
+		return $this->getField("updated_on");
+	}
+
+	/**
+	 * Get Updated On form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getUpdatedOnFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("updated_on")->getFormElement($formElementOverride);
 	}
 
 	/**

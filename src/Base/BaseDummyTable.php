@@ -252,7 +252,7 @@ class BaseDummyTable extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("parent_id"))
-				->setKeyName('demoapp_dt_parent_id_fk')
+				->setKeyName('demoapp_lafdt_parent_id_fk')
 				->setReferencingTable("dummy_table")
 				->setReferencingField("id")
 		);

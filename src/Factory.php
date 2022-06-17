@@ -4,7 +4,6 @@
 namespace Lavdiu\DemoApp;
 
 
-use Lavdiu\DemoApp\RoutingTable;
 use Laf\UI\Container\Card;
 use Laf\UI\Container\CardBody;
 use Laf\UI\Container\CardHeader;
@@ -13,6 +12,8 @@ use Laf\UI\Container\Div;
 use Laf\UI\Container\HtmlContainer;
 use Laf\UI\Page\HeaderComponent;
 use Laf\UI\Page\Html;
+use Laf\Util\Settings;
+use Laf\Util\Util;
 
 class Factory
 {
@@ -40,7 +41,7 @@ class Factory
             #->addHeaderComponent(new HeaderComponent("link", ['rel' => 'stylesheet', 'href' => 'https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css'], true))
             #->addHeaderComponent(new HeaderComponent("script", ['type' => 'text/javascript', 'src' => 'https://cdn.jsdelivr.net/npm/flatpickr']))
 
-            ->setPageTitle('Demo App');
+            ->setPageTitle(Settings::get('project.project_name'));
 
         $page->addHeaderComponent(new HeaderComponent("link", ['rel' => 'icon', 'href' => './icon.png'], true))
             ->addHeaderComponent(new HeaderComponent("link", ['rel' => 'shortcut icon', 'href' => './icon.png'], true))
@@ -54,15 +55,20 @@ class Factory
      * @param string|null $message
      * @return string
      */
-    public static function getFatalErrorMessageCard(string $title, ?string $message): string
+    public static function getFatalErrorMessageCard(\Throwable $e): string
     {
-        $page = Factory::noMenuPage();
+        ob_clean();
+        $message = '<pre>' . $e->getMessage() . '</pre>';
+        if (isDev()) {
+            $message .= '<br /><pre>' . ($e->getTraceAsString()) . '</pre>';
+        }
+        $page = Factory::GeneralPage();
         $card = new Card();
-        $card->addComponent((new CardHeader())->addComponent(new HtmlContainer("<b>{$title}</b>"))->addCssClass('border-danger'))
+        $card->addComponent((new CardHeader(['bg-danger text-white fw-bold']))->addComponent(new HtmlContainer("<b>Error!</b>")))
             ->addComponent((new CardBody())->addComponent(new HtmlContainer($message)))
             ->addCssClass('border-danger');
         $div = new Div();
-        $div->addCssClass('p-2');
+        $div->addCssClass('p-2 container');
         $div->addComponent($card);
         $page->addComponent($div);
         return $page->draw();

@@ -9,7 +9,7 @@ $id = UrlParser::getId();
 
 
 $page = new AdminPage();
-$page->setTitle("<a href='?'>Home</a>");
+$page->setTitle("<a href='?' class='text-black text-decoration-none'>Home</a>");
 $page->setTitleIcon('fa fa-list');
 $page->addComponent(new HtmlContainer("Home Page"));
 

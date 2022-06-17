@@ -1,0 +1,382 @@
+<?php
+
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\Card;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Container\Modal;
+use Laf\UI\Container\Row;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Form\FormRowDisplayMode;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+use Laf\UI\Container\Div;
+use Laf\UI\Container\TabContainer;
+use Laf\UI\Container\TabItem;
+use Lavdiu\DemoApp\Factory;
+use Lavdiu\DemoApp\Group;
+use Lavdiu\DemoApp\Person;
+use Lavdiu\DemoApp\PersonGroup;
+use Lavdiu\DemoApp\PersonLoginDevice;
+use Lavdiu\DemoApp\PersonLoginLog;
+use Lavdiu\DemoApp\RecordStatus;
+use Lavdiu\DemoApp\Role;
+use Lavdiu\DemoApp\RoutingTable;
+
+$id = UrlParser::getId();
+$person = new Person($id);
+
+$form = $person->getForm();
+$form->setFormRowDisplayMode(FormRowDisplayMode::INLINE);
+$form->setComponents([]);
+
+$div1 = new Div(['col col-md']);
+$div2 = new Div(['col col-md']);
+$div3 = new Div(['col col-md']);
+
+
+$div1
+    ->addComponent($person->getNameFormElement())
+    ->addComponent($person->getJobTitleFormElement())
+    ->addComponent($person->getReportsToIdFormElement())
+    ->addComponent($person->getUsernameFormElement())
+    ->addComponent($person->getEmailFormElement());
+$div2
+    ->addComponent($person->getWorkLocationFormElement())
+    ->addComponent($person->getRecordStatusIdFormElement())
+    ->addComponent($person->getPersonTypeIdFormElement())
+    ->addComponent($person->getRequiresLoginDeviceApprovalFormElement());
+
+$inlineDiv = new Div(['row justify-content-evenly']);
+$inlineDiv->addComponent(($person->getTimeRestrictedLoginStartTimeFormElement())->addWrapperCssClass('col'))
+    ->addComponent(($person->getTimeRestrictedLoginEndTimeFormElement())->addWrapperCssClass('col'));
+
+$div2->addComponent($inlineDiv);
+$div3
+    ->addComponent($person->getCreatedByFormElement())
+    ->addComponent($person->getCreatedOnFormElement())
+    ->addComponent($person->getUpdatedByFormElement())
+    ->addComponent($person->getUpdatedOnFormElement());
+$row = new Div(['row']);
+$row->addComponent($div1)
+    ->addComponent($div2)
+    ->addComponent($div3);
+$form->addComponent($row);
+
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-decoration-none text-dark'>User List</a>");
+$page->setTitleIcon(Person::getIcon());
+$form->getSubmitButton()->setValue('Save Changes');
+
+if ($form->isSubmitted()) {
+    if (isset($_POST[$person->getPasswordFld()->getNameRot13()])) {
+        $form->setSubmittedFieldValue('password', $person->encryptPassword($_POST[$person->getPasswordFld()->getNameRot13()]));
+    }
+    $id = $form->processForm();
+    UrlParser::redirectToViewPage($id);
+    exit;
+}
+$person->getUpdatedOnFormElement()->setDrawMode(DrawMode::VIEW);
+$person->getUpdatedByFormElement()->setDrawMode(DrawMode::VIEW);
+$person->getCreatedByFormElement()->setDrawMode(DrawMode::VIEW);
+$person->getCreatedOnFormElement()->setDrawMode(DrawMode::VIEW);
+
+switch (UrlParser::getAction()) {
+    case 'update':
+        $page->setTitle($person->getIdVal() . ' : ' . $person->getNameVal());
+        $form->setDrawMode(DrawMode::UPDATE);
+
+        $page->addComponent($form);
+        $page->setContainerType(ContainerType::TYPE_FLUID);
+        $page->addLink(new Link('Cancel', UrlParser::getViewLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-dark']));
+        $panel = new Div();
+        $panel->setContainerType(ContainerType::TYPE_FLUID);
+        $panel->addComponent($page);
+        $html->addComponent($panel);
+        echo $html->draw();
+        break;
+    case 'new':
+        $form->setDrawMode(DrawMode::INSERT);
+
+
+        $page->addComponent($form);
+        $page->setContainerType(ContainerType::TYPE_FLUID);
+        $page->addLink(new Link('Cancel', UrlParser::getListLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-dark']));
+        $panel = new Div();
+        $panel->setContainerType(ContainerType::TYPE_FLUID);
+        $panel->addComponent($page);
+        $html->addComponent($panel);
+        echo $html->draw();
+        break;
+    case 'mimic':
+        $person = new Person($_GET['uid']);
+        $person->setSessionData();
+        RoutingTable::buildAndCacheMenu();
+        header('location:?mod=home');
+        exit;
+        break;
+    case 'reset_password':
+        $form->setDrawMode(DrawMode::UPDATE);
+        $form->setComponents([]);
+        $form->addComponent($person->getNameFormElement());
+        $form->addComponent($person->getPasswordFormElement());
+        $page->addComponent($form);
+        $person->getNameFormElement()->setDrawMode(DrawMode::VIEW);
+        $attr = $person->getPasswordFormElement()->getAttributes();
+        $attr['value'] = null;
+        $person->getPasswordFormElement()->setAttributes($attr);
+        $page->addLink(new Link('Cancel', UrlParser::getListLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-dark']));
+        $panel = new Div();
+        $panel->setContainerType(ContainerType::TYPE_DEFAULT);
+        $panel->addComponent($page);
+        $html->addComponent($panel);
+        echo $html->draw();
+
+        break;
+    case 'reject_device':
+        $deviceId = $_GET['paisja'] ?? null;
+        $device = new PersonLoginDevice($deviceId);
+        if ($device->recordExists()) {
+            $device->setRecordStatusIdVal(RecordStatus::BANNED);
+            $device->store();
+        }
+        UrlParser::redirectToViewPage(UrlParser::getId());
+        break;
+    case 'approve_device':
+        $deviceId = $_GET['paisja'] ?? null;
+        $device = new PersonLoginDevice($deviceId);
+        if ($device->recordExists()) {
+            $device->setApprovedByVal(Person::getLoggedUserId())
+                ->setRecordStatusIdVal(RecordStatus::ACTIVE)
+                ->setApprovedOnVal(date('Y-m-d H:i:s'));
+            $device->store();
+        }
+        UrlParser::redirectToViewPage(UrlParser::getId());
+        break;
+    case 'delete':
+        if ($person->recordExists()) {
+            if ($person->canSoftDelete()) {
+                $person->softDelete();
+            } else {
+                $person->hardDelete();
+            }
+        }
+        UrlParser::redirectToListPage();
+        break;
+    case 'view':
+        $form->setDrawMode(DrawMode::VIEW);
+        $page->addComponent($form);
+        $page->setTitle($person->getIdVal() . ' : ' . $person->getNameVal());
+        $btnGroup = new Div(['btn-group']);
+        $dd = new Dropdown('Options', '', 'fa fa-cogs', true);
+        $dd->addCssClass('btn-outline-dark')
+            ->addCssClass('btn-sm');
+
+        $deleteLink = new Link('Delete', UrlParser::getDeleteLink(), 'fa fa-trash', ['class' => 'btn btn-sm btn-outline-danger']);
+        $deleteLink->setConfirmationMessage('Are you sure?');
+
+        $dd->addLink(new Link('Update', UrlParser::getUpdateLink(), 'fa fa-edit', ['class' => 'btn btn-sm btn-outline-warning']))
+            ->addLink(new Link('Access', "?module=10184&uid={$person->getIdVal()}", 'fa fa-lock'))
+            ->addLink(new Link('Mimic', '?module=' . UrlParser::getModule() . "&uid={$person->getIdVal()}&action=mimic", 'fa fa-user'))
+            ->addLink(new Link('Reset Password', '?module=' . UrlParser::getModule() . "&action=reset_password&id={$person->getIdVal()}", 'fa fa-lock'))
+            ->addLink($deleteLink);
+        $btnGroup->addComponent(new Link('List', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-dark']))
+            ->addComponent($dd);
+        $page->addLink($btnGroup);
+
+        $panel = new Div(['p-2']);
+        $panel->setContainerType(ContainerType::TYPE_FLUID);
+        $panel->addComponent($page);
+
+
+        $bottomSettings = new Div(['container-fluid']);
+        $bottomSettings->setContainerType(ContainerType::TYPE_FLUID);
+
+        $groupGrid = $person->getUserGroupsGrid();
+        $roleGrid = $person->getUserRoleGrid();
+        $loginLogGrid = $person->getUserLoginLogGrid();
+        $activityGrid = $person->getUserActivityGrid();
+        $deviceListGrid = $person->getUserDeviceGrid();
+
+        $tabContainer = new TabContainer();
+        $groupsTabItem = new TabItem("<i class='fas fa-user-friends'>&nbsp;</i> Groups");
+        $groupsTabItem->addComponent(new HtmlContainer($groupGrid->draw()));
+        $roleTabItem = new TabItem("<i class='fas fa-user-tag'>&nbsp;</i> Roles");
+        $roleTabItem->addComponent(new HtmlContainer($roleGrid->draw()));
+        $loginActivity = new TabItem("<i class='" . PersonLoginLog::getIcon() . "'>&nbsp;</i> Login History");
+        $loginActivity->addComponent(new HtmlContainer($loginLogGrid->draw()));
+        $userActivityTab = new TabItem("<i class='" . PersonLoginLog::getIcon() . "'>&nbsp;</i> Activity");
+        $userActivityTab->addComponent(new HtmlContainer($activityGrid->draw()));
+
+        $paisjetTabItem = new TabItem("<i class='" . PersonLoginDevice::getIcon() . "'>&nbsp;</i> Devices");
+        $paisjetTabItem->addComponent(new HtmlContainer($deviceListGrid->draw()));
+
+
+        $tabContainer->addComponent($groupsTabItem)
+            ->addComponent($roleTabItem)
+            ->addComponent($paisjetTabItem)
+            ->addComponent($loginActivity)
+            ->addComponent($userActivityTab);
+
+        $bottomSettings->addComponent($tabContainer);
+        if ($groupGrid->isReadyToHandleRequests()) {
+            $groupGrid->bootstrap();
+        }
+        if ($roleGrid->isReadyToHandleRequests()) {
+            $roleGrid->bootstrap();
+        }
+        if ($loginLogGrid->isReadyToHandleRequests()) {
+            $loginLogGrid->bootstrap();
+        }
+        if ($activityGrid->isReadyToHandleRequests()) {
+            $activityGrid->bootstrap();
+        }
+        if ($deviceListGrid->isReadyToHandleRequests()) {
+            $deviceListGrid->bootstrap();
+        }
+
+
+        $modal = new Modal('add_group_to_user');
+        $gr = new PersonGroup();
+        $grForm = $gr->getForm();
+        if ($grForm->isSubmitted()) {
+            $grForm->setSubmittedFieldValue($gr->getPersonIdFld()->getName(), UrlParser::getId());
+            $grForm->processForm();
+        }
+        $grForm->setComponents([])
+            ->addComponent($gr->getGroupIdFormElement());
+        $grForm->getSubmitButton()->setValue('Shto');
+        $grForm->setDrawMode(DrawMode::INSERT);
+        $modal->addComponent($grForm);
+        $modal->setTitle('Add Group');
+        $modal->setCancelLabel('Cancel');
+        $modalOpen = $modal->getModalOpenButton();
+        $modalOpen->setValue("<i class='fas fa-user-plus'></i> Add Group");
+        $modalOpen->setCssClasses(['btn btn-outline-primary btn-sm']);
+
+
+        $page2 = new AdminPage();
+        $page2->setTitle('Related Data')
+            ->addComponent(new HtmlContainer($tabContainer->draw()));
+        $page2->addLink($modalOpen);
+        $page2->addComponent($modal);
+        $panel->addComponent($page2);
+        $html->addComponent($panel);
+        echo $html->draw();
+        break;
+    case 'list':
+    default:
+        $filter = " AND COALESCE(person.record_status_id,1) = 1";
+        if (filter_input(INPUT_GET, 'list') == 'all') {
+            $filter = "";
+        }
+
+        $grid = new PhpGrid('person_list');
+        $grid->setTitle('Person List')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `person`.`id` AS person_id
+		, `person`.`reports_to_id` AS person_reports_to_id
+		, `person_reports_to_id`.`name` AS person_reports_to_id_name
+		, `person`.`name` AS person_name
+		, `person`.`email` AS person_email
+		, `person`.`username` AS person_username
+		, `person`.`password` AS person_password
+		, `person`.`created_on` AS person_created_on
+		, `person`.`created_by` AS person_created_by
+		, `person_created_by`.`name` AS person_created_by_name
+		, `person`.`updated_on` AS person_updated_on
+		, `person`.`updated_by` AS person_updated_by
+		, `person_updated_by`.`name` AS person_updated_by_name
+		, `person`.`record_status_id` AS person_record_status_id
+		, `record_status`.`label` AS record_status_label
+		, `person`.`address_id` AS person_address_id
+		, `address`.`address1` AS address_address1
+		, `person`.`time_zone_id` AS person_time_zone_id
+		, `time_zone`.`description` AS time_zone_description
+		, `person`.`profile_picture_id` AS person_profile_picture_id
+		, `person`.`phone` AS person_phone
+		, `person`.`login_cookie` AS person_login_cookie
+		, `person`.`login_ip` AS person_login_ip
+		, `person`.`login_time` AS person_login_time
+		, `person`.`login_duration_minutes` AS person_login_duration_minutes
+		, `person`.`login_agent` AS person_login_agent
+		, `person`.`activation_code` AS person_activation_code
+		, `person`.`reset_password_code` AS person_reset_password_code
+		, `person`.`reset_password_time` AS person_reset_password_time
+		, `person`.`requires_login_device_approval` AS person_requires_login_device_approval
+		, `yes_or_no`.`label` AS yes_or_no_label
+		, `person`.`modulet` AS person_modulet
+		, `person`.`person_type_id` AS person_person_type_id
+		, `person_type`.`label` AS person_type_label
+		, `person`.`last_activity` AS person_last_activity
+		, `person`.`job_title` AS person_job_title
+		, `person`.`work_location` AS person_work_location
+	FROM person person
+	LEFT JOIN `person` `person_reports_to_id` ON `person`.`reports_to_id` = `person_reports_to_id`.`id`
+	LEFT JOIN `person` `person_created_by` ON `person`.`created_by` = `person_created_by`.`id`
+	LEFT JOIN `person` `person_updated_by` ON `person`.`updated_by` = `person_updated_by`.`id`
+	LEFT JOIN `record_status` `record_status` ON `person`.`record_status_id` = `record_status`.`id`
+	LEFT JOIN `address` `address` ON `person`.`address_id` = `address`.`id`
+	LEFT JOIN `time_zone` `time_zone` ON `person`.`time_zone_id` = `time_zone`.`id`
+	LEFT JOIN `yes_or_no` `yes_or_no` ON `person`.`requires_login_device_approval` = `yes_or_no`.`id`
+	LEFT JOIN `person_type` `person_type` ON `person`.`person_type_id` = `person_type`.`id`
+	WHERE 1=1 
+        ' . $filter . '
+)l1 ');
+
+        $grid->addColumn(((new Column('person_id', 'Id', true, true, sprintf('?module=%s&action=view&id={person_id}', UrlParser::getModule()))))->setOuterElementCssStyle('width:80px;text-align:center;')->setInnerElementCssClass('btn btn-sm btn-outline-dark'));
+        $grid->addColumn(new Column('person_name', 'Name', true));
+        $grid->addColumn(new Column('person_reports_to_id_name', 'Reports To', true));
+        $grid->addColumn(new Column('person_email', 'Email', true));
+        $grid->addColumn(new Column('person_username', 'Username', true));
+        $grid->addColumn(new Column('person_updated_on', 'Updated On', false));
+        $grid->addColumn(((new Column('record_status_label', 'Status', true))->setOuterElementCssStyle('width:100px;')));
+        $grid->addColumn(new Column('person_login_ip', 'Login Ip', false));
+        $grid->addColumn(new Column('person_login_time', 'Last Login', true));
+        $grid->addColumn(new Column('yes_or_no_label', 'Device approval', true));
+        $grid->addColumn(new Column('person_modulet', 'Modules', false));
+        $grid->addColumn(new Column('person_type_label', 'Type', true));
+        $grid->addColumn(new Column('person_last_activity', 'Last Activity', false));
+        $grid->addColumn(new Column('person_job_title', 'Title', true));
+        $grid->addColumn(new Column('person_work_location', 'Work Location', false));
+
+        $grid->addActionButton(new ActionButton('Shiko', sprintf('?module=%s&action=view&id={person_id}', UrlParser::getModule()), 'fa fa-eye'));
+        $grid->addActionButton(new ActionButton('Ndrysho', sprintf('?module=%s&action=update&id={person_id}', UrlParser::getModule()), 'fa fa-edit'));
+        #$deleteLink = new ActionButton('Delete', sprintf('?module=%s&action=delete&id={person_id}', UrlParser::getModule()), 'fa fa-trash');
+        #$deleteLink->addAttribute('onclick', "return confirm('Are you sure you want to delete this?')");
+        #$grid->addActionButton($deleteLink);
+
+
+        $grid->addActionButton(new ActionButton('Access', '?module=10184&uid={person_id}', 'fa fa-lock'));
+        $grid->addActionButton(new ActionButton('Mimic', '?module=' . UrlParser::getModule() . '&uid={person_id}&action=mimic', 'fa fa-user'));
+        $grid->addActionButton(new ActionButton('Reset Password', '?module=' . UrlParser::getModule() . '&action=reset_password&id={person_id}', 'fa fa-lock'));
+        $grid->setSortDetails('person_id', 'ASC');
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        if (filter_input(INPUT_GET, 'list') == 'all') {
+            $page->addLink(new Link('Show Active Only', UrlParser::getListLink() . '&list=active', 'fa fa-list', [], ['btn btn-sm btn-outline-secondary']));
+        } else {
+            $page->addLink(new Link('Show All', UrlParser::getListLink() . '&list=all', 'fa fa-list', [], ['btn btn-sm btn-outline-secondary']));
+        }
+        $page->addLink(new Link('Groups', "?module=10272", Group::getIcon(), [], ['btn btn-sm btn-outline-secondary']));
+        $page->addLink(new Link('Roles', "?module=10273", Role::getIcon(), [], ['btn btn-sm btn-outline-secondary']));
+
+        $page->addLink(new Link('Add New', UrlParser::getNewLink(), 'fa fa-plus-square', [], ['btn btn-sm btn-outline-dark']));
+        $page->setContainerType(ContainerType::TYPE_FLUID);
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+}

@@ -202,7 +202,7 @@ class BaseEmail extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("created_by"))
-				->setKeyName('demoapp_email_creator_fk_idx')
+				->setKeyName('demoapp_lafemail_creator_fk_idx')
 				->setReferencingTable("person")
 				->setReferencingField("id")
 		);

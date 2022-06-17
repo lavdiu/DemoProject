@@ -1,0 +1,152 @@
+<?php
+
+
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+use Laf\UI\Container\Div;
+use Laf\UI\Container\TabContainer;
+use Laf\UI\Container\TabItem;
+use Lavdiu\DemoApp\Factory;
+use Lavdiu\DemoApp\Role;
+
+$id = UrlParser::getId();
+$role = new Role($id);
+
+$form = $role->getForm();
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+$page->setContainerType(ContainerType::TYPE_DEFAULT);
+
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-decoration-none text-dark'>User Role</a>");
+$page->setTitleIcon(Role::getIcon());
+
+
+if ($form->isSubmitted()) {
+    $id = $form->processForm();
+    UrlParser::redirectToViewPage($id);
+    exit;
+}
+
+switch (UrlParser::getAction()) {
+    case 'update':
+
+        $form->setDrawMode(DrawMode::UPDATE);
+        $page->addComponent($form);
+
+        $page->addLink(new Link('Cancel', UrlParser::getViewLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+    case 'new':
+        $form->setDrawMode(DrawMode::INSERT);
+        $page->addComponent($form);
+        $page->addLink(new Link('Cancel', UrlParser::getListLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+    case 'delete':
+        if ($role->recordExists()) {
+            if ($role->canSoftDelete()) {
+                $role->softDelete();
+            } else {
+                $role->hardDelete();
+            }
+        }
+        UrlParser::redirectToListPage();
+        break;
+    case 'view':
+        $form->setDrawMode(DrawMode::VIEW);
+        $page->addComponent($form);
+        $page->addLink(new Link('Lista', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-success']));
+
+        $dd = new Dropdown('Opsione', '', 'fa fa-cogs', true);
+        $dd->addCssClass('btn-outline-success')
+            ->addCssClass('btn-sm');
+        $newLink = new Link('Ndrysho', UrlParser::getUpdateLink(), 'fa fa-edit', ['class' => 'btn btn-sm btn-outline-warning']);
+        $deleteLink = new Link('Fshij', UrlParser::getDeleteLink(), 'fa fa-trash', ['class' => 'btn btn-sm btn-outline-danger']);
+        $deleteLink->setConfirmationMessage('A jeni të sigurtë?');
+
+        $dd->addLink($newLink)
+            ->addLink($deleteLink);
+        $page->addLink($dd);
+        $html->addComponent($page);
+
+        $tabContainer = new TabContainer();
+
+        $group_role = $role->getRelatedGroupsGrid();
+        $personList = $role->getRelatedUsersGrid();
+
+        if ($group_role->isReadyToHandleRequests()) {
+            $group_role->bootstrap();
+        }
+        if ($personList->isReadyToHandleRequests()) {
+            $personList->bootstrap();
+        }
+
+        $tabItem = new TabItem('Related Groups');
+        $tabItem->addComponent(new HtmlContainer($group_role->draw()));
+        $tabContainer->addComponent($tabItem);
+
+        $tabItem2 = new TabItem('Related Users');
+        $tabItem2->addComponent(new HtmlContainer($personList->draw()));
+        $tabContainer->addComponent($tabItem2);
+
+        $page2 = new AdminPage();
+        $page2->setContainerType(ContainerType::TYPE_DEFAULT);
+        $page2->setTitle('Related Data')
+            ->addComponent(new HtmlContainer($tabContainer->draw()));
+        $html->addComponent($page2);
+        echo $html->draw();
+        break;
+    case 'list':
+    default:
+        $page->setContainerType(ContainerType::TYPE_FLUID);
+        $grid = new PhpGrid('role_list');
+        $grid->setTitle('User Role List')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `role`.`id` AS role_id
+		, `role`.`label` AS role_label
+		, `role`.`description` AS role_description
+		, `role`.`record_status_id` AS role_record_status_id
+		, `record_status`.`label` AS record_status_label
+		, `role`.`unique_name` AS role_unique_name
+	FROM role role
+	LEFT JOIN `record_status` `record_status` ON `role`.`record_status_id` = `record_status`.`id`
+	WHERE 1=1 
+)l1 ');
+
+        $grid->addColumn(((new Column('role_id', 'Id', true, true, sprintf('?module=%s&action=view&id={role_id}', UrlParser::getModule())))->setInnerElementCssClass('btn btn-sm btn-outline-success')));
+        $grid->addColumn(new Column('role_label', 'Label', true));
+        $grid->addColumn(new Column('role_description', 'Description', true));
+        $grid->addColumn(new Column('role_record_status_id', 'Record StatusId', false));
+        $grid->addColumn(new Column('record_status_label', 'Record Status', true));
+        $grid->addColumn(new Column('role_unique_name', 'Unique Name', true));
+
+        $grid->addActionButton(new ActionButton('Shiko', sprintf('?module=%s&action=view&id={role_id}', UrlParser::getModule()), 'fa fa-eye'));
+        $grid->addActionButton(new ActionButton('Ndrysho', sprintf('?module=%s&action=update&id={role_id}', UrlParser::getModule()), 'fa fa-edit'));
+        $deleteLink = new ActionButton('Fshij', sprintf('?module=%s&action=delete&id={role_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('A jeni të sigurtë?')");
+        $grid->addActionButton($deleteLink);
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        $page->addLink(new Link('New', UrlParser::getNewLink(), 'fa fa-plus-square', [], ['class' => 'btn btn-sm btn-outline-success']));
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+}

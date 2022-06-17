@@ -14,6 +14,11 @@ docker exec web.app composer install --no-interaction --no-progress --no-suggest
 
 #### How to Run:
 Navigate to http://localhost:8080/ to see the demo.  
+The credentials are:
+```
+username: administrator
+password: administrator
+```
 
 #### Database Access
 To access the Database, use the following credentials:

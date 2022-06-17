@@ -103,7 +103,7 @@ class BasePersonLoginDevice extends Database\BaseObject
 			->setLabel("Cookie")
 			->setPlaceHolder("Cookie")
 			->setRequired(false)
-			->setMaxLength(100)
+			->setMaxLength(255)
 			->setAutoIncrement(false)
 			->setUnique(false)
 			->setType(new Database\Field\TypeVarchar());
@@ -158,6 +158,54 @@ class BasePersonLoginDevice extends Database\BaseObject
 		$this->getTable()->addField($field);
 		$field = null;
 
+		$field = (new Field())
+			->setName("expires_on")
+			->setLabel("Expires On")
+			->setPlaceHolder("Expires On")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeDateTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("user_agent")
+			->setLabel("User Agent")
+			->setPlaceHolder("User Agent")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeVarchar());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("record_status_id")
+			->setLabel("Record Status")
+			->setPlaceHolder("Record Status")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("is_mobile_device")
+			->setLabel("Is Mobile Device")
+			->setPlaceHolder("Is Mobile Device")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
+		$this->getTable()->addField($field);
+		$field = null;
+
 		$this->getTable()->setPrimaryKey($pk);
 
 		/**
@@ -166,7 +214,7 @@ class BasePersonLoginDevice extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("person_id"))
-				->setKeyName('demoapp_person_login_device_person_id_fk')
+				->setKeyName('demoapp_lafperson_login_device_person_id_fk')
 				->setReferencingTable("person")
 				->setReferencingField("id")
 		);
@@ -174,8 +222,24 @@ class BasePersonLoginDevice extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("approved_by"))
-				->setKeyName('demoapp_person_login_device_approved_by_fk')
+				->setKeyName('demoapp_lafperson_login_device_approved_by_fk')
 				->setReferencingTable("person")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("record_status_id"))
+				->setKeyName('person_login_device_status_fk')
+				->setReferencingTable("record_status")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("is_mobile_device"))
+				->setKeyName('person_login_device_is_mobile_fk')
+				->setReferencingTable("yes_or_no")
 				->setReferencingField("id")
 		);
 
@@ -525,6 +589,192 @@ class BasePersonLoginDevice extends Database\BaseObject
 	public function getApprovedOnFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
 		return $this->getField("approved_on")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Expires On value
+	 * @param mixed $value
+	 * @return PersonLoginDevice
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setExpiresOnVal($value = null)
+	{
+		$this->setFieldValue("expires_on", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Expires On value
+	 * @return mixed
+	 */
+	public function getExpiresOnVal()
+	{
+		return $this->getFieldValue("expires_on");
+	}
+
+	/**
+	 * Get Expires On field reference
+	 * @return Field
+	 */
+	public function getExpiresOnFld()
+	{
+		return $this->getField("expires_on");
+	}
+
+	/**
+	 * Get Expires On form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getExpiresOnFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("expires_on")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set User Agent value
+	 * @param mixed $value
+	 * @return PersonLoginDevice
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setUserAgentVal($value = null)
+	{
+		$this->setFieldValue("user_agent", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get User Agent value
+	 * @return mixed
+	 */
+	public function getUserAgentVal()
+	{
+		return $this->getFieldValue("user_agent");
+	}
+
+	/**
+	 * Get User Agent field reference
+	 * @return Field
+	 */
+	public function getUserAgentFld()
+	{
+		return $this->getField("user_agent");
+	}
+
+	/**
+	 * Get User Agent form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getUserAgentFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("user_agent")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Record Status value
+	 * @param mixed $value
+	 * @return PersonLoginDevice
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setRecordStatusIdVal($value = null)
+	{
+		$this->setFieldValue("record_status_id", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Record Status value
+	 * @return mixed
+	 */
+	public function getRecordStatusIdVal()
+	{
+		return $this->getFieldValue("record_status_id");
+	}
+
+	/**
+	 * Get Record Status field reference
+	 * @return Field
+	 */
+	public function getRecordStatusIdFld()
+	{
+		return $this->getField("record_status_id");
+	}
+
+	/**
+	 * Get Record Status form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getRecordStatusIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("record_status_id")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Get RecordStatus Object
+	 * @return \Lavdiu\DemoApp\RecordStatus
+	 */
+	public function getRecordStatusIdObj()
+	{
+		if (is_numeric($this->getRecordStatusIdVal())) {
+			return new \Lavdiu\DemoApp\RecordStatus($this->getRecordStatusIdVal());
+		} else {
+			return new \Lavdiu\DemoApp\RecordStatus();
+		}
+	}
+
+	/**
+	 * Set Is Mobile Device value
+	 * @param mixed $value
+	 * @return PersonLoginDevice
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setIsMobileDeviceVal($value = null)
+	{
+		$this->setFieldValue("is_mobile_device", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Is Mobile Device value
+	 * @return mixed
+	 */
+	public function getIsMobileDeviceVal()
+	{
+		return $this->getFieldValue("is_mobile_device");
+	}
+
+	/**
+	 * Get Is Mobile Device field reference
+	 * @return Field
+	 */
+	public function getIsMobileDeviceFld()
+	{
+		return $this->getField("is_mobile_device");
+	}
+
+	/**
+	 * Get Is Mobile Device form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getIsMobileDeviceFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("is_mobile_device")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Get YesOrNo Object
+	 * @return \Lavdiu\DemoApp\YesOrNo
+	 */
+	public function getIsMobileDeviceObj()
+	{
+		if (is_numeric($this->getIsMobileDeviceVal())) {
+			return new \Lavdiu\DemoApp\YesOrNo($this->getIsMobileDeviceVal());
+		} else {
+			return new \Lavdiu\DemoApp\YesOrNo();
+		}
 	}
 
 	/**

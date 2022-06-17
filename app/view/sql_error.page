@@ -1,0 +1,171 @@
+<?php
+
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+
+use Laf\UI\Container\Div;
+use Laf\UI\Container\TabContainer;
+use Laf\UI\Container\TabItem;
+use Lavdiu\DemoApp\Factory;
+use Lavdiu\DemoApp\SqlError;
+
+$id = UrlParser::getId();
+$sqlerror = new SqlError($id);
+$form = $sqlerror->getForm();
+
+/**
+	$form->setComponents([])
+		->addComponent($sqlerror->getIdFormElement())
+		->addComponent($sqlerror->getErrorMessageFormElement())
+		->addComponent($sqlerror->getSqlQueryFormElement())
+		->addComponent($sqlerror->getExceptionTraceFormElement())
+		->addComponent($sqlerror->getPageFileFormElement())
+		->addComponent($sqlerror->getLineNumberFormElement())
+		->addComponent($sqlerror->getPersonIdFormElement())
+		->addComponent($sqlerror->getFilialjaIdFormElement())
+		->addComponent($sqlerror->getKompaniaIdFormElement())
+		->addComponent($sqlerror->getCreatedOnFormElement());
+*/
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-black text-decoration-none'>Sql Errors</a>");
+$page->setTitleIcon('far fa-list-alt');
+
+
+if ($form->isSubmitted()) {
+	$id = $form->processForm();
+	UrlParser::redirectToViewPage($id);
+	exit;
+}
+
+switch (UrlParser::getAction()) {
+	case 'update':
+        $page->setContainerType(ContainerType::TYPE_DEFAULT);
+		$form->setDrawMode(DrawMode::UPDATE);
+		
+/**
+	$form->setComponents([])
+		->addComponent($sqlerror->getIdFormElement())
+		->addComponent($sqlerror->getErrorMessageFormElement())
+		->addComponent($sqlerror->getSqlQueryFormElement())
+		->addComponent($sqlerror->getExceptionTraceFormElement())
+		->addComponent($sqlerror->getPageFileFormElement())
+		->addComponent($sqlerror->getLineNumberFormElement())
+		->addComponent($sqlerror->getPersonIdFormElement())
+		->addComponent($sqlerror->getFilialjaIdFormElement())
+		->addComponent($sqlerror->getKompaniaIdFormElement());
+*/
+		$page->addComponent($form);
+
+		$page->addLink(new Link('Anulo', UrlParser::getViewLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+	case 'new':
+	    $page->setContainerType(ContainerType::TYPE_DEFAULT);
+	    
+/**
+	$form->setComponents([])
+		->addComponent($sqlerror->getIdFormElement())
+		->addComponent($sqlerror->getErrorMessageFormElement())
+		->addComponent($sqlerror->getSqlQueryFormElement())
+		->addComponent($sqlerror->getExceptionTraceFormElement())
+		->addComponent($sqlerror->getPageFileFormElement())
+		->addComponent($sqlerror->getLineNumberFormElement())
+		->addComponent($sqlerror->getPersonIdFormElement())
+		->addComponent($sqlerror->getFilialjaIdFormElement())
+		->addComponent($sqlerror->getKompaniaIdFormElement());
+*/
+		$form->setDrawMode(DrawMode::INSERT);
+		$page->addComponent($form);
+		$page->addLink(new Link('Anulo', UrlParser::getListLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+	case 'delete':
+		if ($sqlerror->recordExists()) {
+			if ($sqlerror->canSoftDelete()) {
+				$sqlerror->softDelete();
+			} else {
+				$sqlerror->hardDelete();
+			}
+		}
+		UrlParser::redirectToListPage();
+		break;
+	case 'view':
+	    $page->setContainerType(ContainerType::TYPE_DEFAULT);
+		$form->setDrawMode(DrawMode::VIEW);
+		$page->addComponent($form);
+		$page->addLink(new Link('Lista', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-success']));
+
+		$dd = new Dropdown('Veprime', '', 'fa fa-cogs', true);
+		$dd->addCssClass('btn-outline-success')
+			->addCssClass('btn-sm');
+		$newLink = new Link('Ndrysho', UrlParser::getUpdateLink(), 'fa fa-edit', ['class' => 'btn btn-sm btn-outline-warning']);
+		$deleteLink = new Link('Fshij', UrlParser::getDeleteLink(), 'fa fa-trash', ['class' => 'btn btn-sm btn-outline-danger']);
+		$deleteLink->setConfirmationMessage('A jeni të sigurtë?');
+
+		$dd->addLink($newLink)
+			->addLink($deleteLink);
+		$page->addLink($dd);
+		$html->addComponent($page);
+
+		echo $html->draw();
+		break;
+	case 'list':
+	default:
+		$grid = new PhpGrid('sql_error_list');
+        $grid->setTitle('Sql Error Lista')
+            ->setRowsPerPage(20)
+            ->setSqlQuery("
+SELECT * FROM (
+	SELECT
+		  `sql_error`.`id` AS sql_error_id
+		, `sql_error`.`error_message` AS sql_error_error_message
+		,  CONCAT(substr(`sql_error`.`sql_query`,0, 100), ' ...') AS sql_error_sql_query
+		,  CONCAT(substr(`sql_error`.`exception_trace`,0, 100), ' ...') AS sql_error_exception_trace
+		, `sql_error`.`page_file` AS sql_error_page_file
+		, `sql_error`.`line_number` AS sql_error_line_number
+		, `sql_error`.`person_id` AS sql_error_person_id
+		, `sql_error`.`created_on` AS sql_error_created_on
+	FROM sql_error sql_error
+	
+	WHERE 1=1 
+)l1 ");
+
+		$grid->addColumn(((new Column('sql_error_id', 'Id', true, true, sprintf('?module=%s&action=view&id={sql_error_id}', UrlParser::getModule())))->setInnerElementCssClass('btn btn-sm btn-outline-success'))->setOuterElementCssStyle('width:100px;'));
+		$grid->addColumn(new Column('sql_error_error_message', 'Error Message', true));
+		$grid->addColumn(new Column('sql_error_sql_query', 'Sql Query', true));
+		$grid->addColumn(new Column('sql_error_exception_trace', 'Exception Trace', true));
+		$grid->addColumn(new Column('sql_error_page_file', 'Page File', true));
+		$grid->addColumn(new Column('sql_error_line_number', 'Line Number', true));
+		$grid->addColumn(new Column('sql_error_person_id', 'Person', true));
+		$grid->addColumn(new Column('sql_error_created_on', 'Created On', true));
+
+		$grid->addActionButton(new ActionButton('Hape', sprintf('?module=%s&action=view&id={sql_error_id}', UrlParser::getModule()), 'fa fa-eye'));
+        $grid->addActionButton(new ActionButton('Ndrysho', sprintf('?module=%s&action=update&id={sql_error_id}', UrlParser::getModule()), 'fa fa-edit'));
+        $deleteLink = new ActionButton('Fshij', sprintf('?module=%s&action=delete&id={sql_error_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('A jeni të sigurtë?')");
+        $grid->addActionButton($deleteLink);
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        $page->addLink(new Link('Regjistro', UrlParser::getNewLink(), 'fa fa-plus-square', [], ['class' => 'btn btn-sm btn-outline-success']));
+		$page->setContainerType(ContainerType::TYPE_FLUID);
+		$html->addComponent($page);
+		echo $html->draw();
+		break;
+}

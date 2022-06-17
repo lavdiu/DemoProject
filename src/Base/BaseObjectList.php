@@ -9,18 +9,18 @@ use Laf\Database\PrimaryKey;
 use Laf\Database\ForeignKey;
 use Laf\UI\Form\FormElementInterface;
 use Laf\UI\ComponentInterface;
-use Lavdiu\DemoApp\Group;
+use Lavdiu\DemoApp\ObjectList;
 use Laf\Exception\InvalidForeignKeyValue;
 
 /**
- * Class BaseGroup
+ * Class BaseObjectList
  * @package Lavdiu\DemoApp\Base
- * Base Class for Table group
- * Basic definition of the fields and relationship with the Database Table group
+ * Base Class for Table object_list
+ * Basic definition of the fields and relationship with the Database Table object_list
  * This class will be auto-generated every time there is a schema change
  * Please do not add code here. Instead add your code at the main class one directory above
  */
-class BaseGroup extends Database\BaseObject
+class BaseObjectList extends Database\BaseObject
 {
 	/**
 	 * Instructors constructor.
@@ -56,7 +56,7 @@ class BaseGroup extends Database\BaseObject
 	 */
 	private function buildClass()
 	{
-		$this->setTable(new Table('group'));
+		$this->setTable(new Table('object_list'));
 		/**
 		 * Generate field data
 		 */
@@ -75,9 +75,9 @@ class BaseGroup extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("label")
-			->setLabel("Label")
-			->setPlaceHolder("Label")
+			->setName("table_name")
+			->setLabel("Table Name")
+			->setPlaceHolder("Table Name")
 			->setRequired(false)
 			->setMaxLength(255)
 			->setAutoIncrement(false)
@@ -87,26 +87,14 @@ class BaseGroup extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("description")
-			->setLabel("Description")
-			->setPlaceHolder("Description")
-			->setRequired(true)
-			->setMaxLength(65535)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeText());
-		$this->getTable()->addField($field);
-		$field = null;
-
-		$field = (new Field())
-			->setName("record_status_id")
-			->setLabel("Record Status")
-			->setPlaceHolder("Record Status")
+			->setName("object_name")
+			->setLabel("Object Name")
+			->setPlaceHolder("Object Name")
 			->setRequired(false)
 			->setMaxLength(255)
 			->setAutoIncrement(false)
 			->setUnique(false)
-			->setType(new Database\Field\TypeInteger());
+			->setType(new Database\Field\TypeVarchar());
 		$this->getTable()->addField($field);
 		$field = null;
 
@@ -115,20 +103,12 @@ class BaseGroup extends Database\BaseObject
 		/**
 		 * Generating Foreign keys
 		 */
-		$this->getTable()->addForeignKey(
-			(new ForeignKey())
-				->setField($this->getTable()->getField("record_status_id"))
-				->setKeyName('group_record_status_id_fk')
-				->setReferencingTable("record_status")
-				->setReferencingField("id")
-		);
-
 	}
 
 	/**
 	 * Set Id value
 	 * @param mixed $value
-	 * @return Group
+	 * @return ObjectList
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setIdVal($value = null)
@@ -166,136 +146,83 @@ class BaseGroup extends Database\BaseObject
 	}
 
 	/**
-	 * Set Label value
+	 * Set Table Name value
 	 * @param mixed $value
-	 * @return Group
+	 * @return ObjectList
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setLabelVal($value = null)
+	public function setTableNameVal($value = null)
 	{
-		$this->setFieldValue("label", $value);
+		$this->setFieldValue("table_name", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Label value
+	 * Get Table Name value
 	 * @return mixed
 	 */
-	public function getLabelVal()
+	public function getTableNameVal()
 	{
-		return $this->getFieldValue("label");
+		return $this->getFieldValue("table_name");
 	}
 
 	/**
-	 * Get Label field reference
+	 * Get Table Name field reference
 	 * @return Field
 	 */
-	public function getLabelFld()
+	public function getTableNameFld()
 	{
-		return $this->getField("label");
+		return $this->getField("table_name");
 	}
 
 	/**
-	 * Get Label form element reference
+	 * Get Table Name form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getLabelFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getTableNameFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("label")->getFormElement($formElementOverride);
+		return $this->getField("table_name")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set Description value
+	 * Set Object Name value
 	 * @param mixed $value
-	 * @return Group
+	 * @return ObjectList
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setDescriptionVal($value = null)
+	public function setObjectNameVal($value = null)
 	{
-		$this->setFieldValue("description", $value);
+		$this->setFieldValue("object_name", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Description value
+	 * Get Object Name value
 	 * @return mixed
 	 */
-	public function getDescriptionVal()
+	public function getObjectNameVal()
 	{
-		return $this->getFieldValue("description");
+		return $this->getFieldValue("object_name");
 	}
 
 	/**
-	 * Get Description field reference
+	 * Get Object Name field reference
 	 * @return Field
 	 */
-	public function getDescriptionFld()
+	public function getObjectNameFld()
 	{
-		return $this->getField("description");
+		return $this->getField("object_name");
 	}
 
 	/**
-	 * Get Description form element reference
+	 * Get Object Name form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getDescriptionFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getObjectNameFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("description")->getFormElement($formElementOverride);
-	}
-
-	/**
-	 * Set Record Status value
-	 * @param mixed $value
-	 * @return Group
-	 * @throws InvalidForeignKeyValue
-	 */
-	public function setRecordStatusIdVal($value = null)
-	{
-		$this->setFieldValue("record_status_id", $value);
-		return static::returnLeafClass();
-	}
-
-	/**
-	 * Get Record Status value
-	 * @return mixed
-	 */
-	public function getRecordStatusIdVal()
-	{
-		return $this->getFieldValue("record_status_id");
-	}
-
-	/**
-	 * Get Record Status field reference
-	 * @return Field
-	 */
-	public function getRecordStatusIdFld()
-	{
-		return $this->getField("record_status_id");
-	}
-
-	/**
-	 * Get Record Status form element reference
-	 * @param FormElementInterface|null $formElementOverride
-	 * @return ComponentInterface
-	 */
-	public function getRecordStatusIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
-	{
-		return $this->getField("record_status_id")->getFormElement($formElementOverride);
-	}
-
-	/**
-	 * Get RecordStatus Object
-	 * @return \Lavdiu\DemoApp\RecordStatus
-	 */
-	public function getRecordStatusIdObj()
-	{
-		if (is_numeric($this->getRecordStatusIdVal())) {
-			return new \Lavdiu\DemoApp\RecordStatus($this->getRecordStatusIdVal());
-		} else {
-			return new \Lavdiu\DemoApp\RecordStatus();
-		}
+		return $this->getField("object_name")->getFormElement($formElementOverride);
 	}
 
 	/**
@@ -315,7 +242,7 @@ class BaseGroup extends Database\BaseObject
 	 * Gets all rows and instantiates the object for all
 	 * Then returns an array of all objects
 	 * Please be careful, this can be bad for large tables
-	 * @return Group[]
+	 * @return ObjectList[]
 	 * @throws \Exception
 	 */
 	public function listAllObjects(): array

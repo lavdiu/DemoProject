@@ -1,0 +1,51 @@
+<?php
+
+use Laf\Database\Db;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Page\AdminPage;
+use Lavdiu\DemoApp\Factory;
+
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+$page->setTitle('Lista e proceseve');
+
+
+$grid = new PhpGrid('show_full_processlist');
+$grid->setTitle('Lista')
+    ->setRowsPerPage(20)
+    ->setSqlQuery('
+SELECT * FROM (
+	SELECT * FROM information_schema.processlist
+)l1 ');
+
+$grid->addColumn(new Column('ID', 'Id', true));
+$grid->addColumn(new Column('USER', 'User', true));
+$grid->addColumn(new Column('HOST', 'Host', true));
+$grid->addColumn(new Column('DB', 'Db', true));
+$grid->addColumn(new Column('COMMAND', 'Command', true));
+$grid->addColumn(new Column('TIME', 'Time', true));
+$grid->addColumn(new Column('STATE', 'State', true));
+$grid->addColumn(new Column('INFO', 'Info', true));
+$grid->addColumn(new Column('TIME_MS', 'Time MS', true));
+$grid->addColumn(new Column('STAGE', 'Stage', true));
+$grid->addColumn(new Column('MAX_STAGE', 'Max Stage', true));
+$grid->addColumn(new Column('PROGRESS', 'Progress', true));
+$grid->addColumn(new Column('MEMORY_USED', 'Memory Used', true));
+$grid->addColumn(new Column('MAX_MEMORY_USED', 'Max Memory Used', true));
+$grid->addColumn(new Column('EXAMINED_ROWS', 'Examined Rows', true));
+$grid->addColumn(new Column('QUERY_ID', 'Query Id', true));
+$grid->addColumn(new Column('INFO_BINARY', 'Info Binary', true));
+$grid->addColumn(new Column('TID', 'Tid', true));
+
+
+if ($grid->isReadyToHandleRequests()) {
+    $grid->bootstrap();
+}
+
+$page->addComponent(new HtmlContainer($grid->draw()));
+
+
+$html->addComponent($page);
+echo $html->draw();

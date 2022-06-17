@@ -9,18 +9,18 @@ use Laf\Database\PrimaryKey;
 use Laf\Database\ForeignKey;
 use Laf\UI\Form\FormElementInterface;
 use Laf\UI\ComponentInterface;
-use Lavdiu\DemoApp\Group;
+use Lavdiu\DemoApp\BackupsHourly;
 use Laf\Exception\InvalidForeignKeyValue;
 
 /**
- * Class BaseGroup
+ * Class BaseBackupsHourly
  * @package Lavdiu\DemoApp\Base
- * Base Class for Table group
- * Basic definition of the fields and relationship with the Database Table group
+ * Base Class for Table backups_hourly
+ * Basic definition of the fields and relationship with the Database Table backups_hourly
  * This class will be auto-generated every time there is a schema change
  * Please do not add code here. Instead add your code at the main class one directory above
  */
-class BaseGroup extends Database\BaseObject
+class BaseBackupsHourly extends Database\BaseObject
 {
 	/**
 	 * Instructors constructor.
@@ -56,7 +56,7 @@ class BaseGroup extends Database\BaseObject
 	 */
 	private function buildClass()
 	{
-		$this->setTable(new Table('group'));
+		$this->setTable(new Table('backups_hourly'));
 		/**
 		 * Generate field data
 		 */
@@ -75,9 +75,9 @@ class BaseGroup extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("label")
-			->setLabel("Label")
-			->setPlaceHolder("Label")
+			->setName("file_name")
+			->setLabel("File Name")
+			->setPlaceHolder("File Name")
 			->setRequired(false)
 			->setMaxLength(255)
 			->setAutoIncrement(false)
@@ -87,21 +87,21 @@ class BaseGroup extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("description")
-			->setLabel("Description")
-			->setPlaceHolder("Description")
-			->setRequired(true)
-			->setMaxLength(65535)
+			->setName("file_path")
+			->setLabel("File Path")
+			->setPlaceHolder("File Path")
+			->setRequired(false)
+			->setMaxLength(255)
 			->setAutoIncrement(false)
 			->setUnique(false)
-			->setType(new Database\Field\TypeText());
+			->setType(new Database\Field\TypeVarchar());
 		$this->getTable()->addField($field);
 		$field = null;
 
 		$field = (new Field())
-			->setName("record_status_id")
-			->setLabel("Record Status")
-			->setPlaceHolder("Record Status")
+			->setName("file_size")
+			->setLabel("File Size")
+			->setPlaceHolder("File Size")
 			->setRequired(false)
 			->setMaxLength(255)
 			->setAutoIncrement(false)
@@ -110,25 +110,29 @@ class BaseGroup extends Database\BaseObject
 		$this->getTable()->addField($field);
 		$field = null;
 
+		$field = (new Field())
+			->setName("created_on")
+			->setLabel("Created On")
+			->setPlaceHolder("Created On")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeDateTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
 		$this->getTable()->setPrimaryKey($pk);
 
 		/**
 		 * Generating Foreign keys
 		 */
-		$this->getTable()->addForeignKey(
-			(new ForeignKey())
-				->setField($this->getTable()->getField("record_status_id"))
-				->setKeyName('group_record_status_id_fk')
-				->setReferencingTable("record_status")
-				->setReferencingField("id")
-		);
-
 	}
 
 	/**
 	 * Set Id value
 	 * @param mixed $value
-	 * @return Group
+	 * @return BackupsHourly
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setIdVal($value = null)
@@ -166,136 +170,163 @@ class BaseGroup extends Database\BaseObject
 	}
 
 	/**
-	 * Set Label value
+	 * Set File Name value
 	 * @param mixed $value
-	 * @return Group
+	 * @return BackupsHourly
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setLabelVal($value = null)
+	public function setFileNameVal($value = null)
 	{
-		$this->setFieldValue("label", $value);
+		$this->setFieldValue("file_name", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Label value
+	 * Get File Name value
 	 * @return mixed
 	 */
-	public function getLabelVal()
+	public function getFileNameVal()
 	{
-		return $this->getFieldValue("label");
+		return $this->getFieldValue("file_name");
 	}
 
 	/**
-	 * Get Label field reference
+	 * Get File Name field reference
 	 * @return Field
 	 */
-	public function getLabelFld()
+	public function getFileNameFld()
 	{
-		return $this->getField("label");
+		return $this->getField("file_name");
 	}
 
 	/**
-	 * Get Label form element reference
+	 * Get File Name form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getLabelFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getFileNameFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("label")->getFormElement($formElementOverride);
+		return $this->getField("file_name")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set Description value
+	 * Set File Path value
 	 * @param mixed $value
-	 * @return Group
+	 * @return BackupsHourly
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setDescriptionVal($value = null)
+	public function setFilePathVal($value = null)
 	{
-		$this->setFieldValue("description", $value);
+		$this->setFieldValue("file_path", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Description value
+	 * Get File Path value
 	 * @return mixed
 	 */
-	public function getDescriptionVal()
+	public function getFilePathVal()
 	{
-		return $this->getFieldValue("description");
+		return $this->getFieldValue("file_path");
 	}
 
 	/**
-	 * Get Description field reference
+	 * Get File Path field reference
 	 * @return Field
 	 */
-	public function getDescriptionFld()
+	public function getFilePathFld()
 	{
-		return $this->getField("description");
+		return $this->getField("file_path");
 	}
 
 	/**
-	 * Get Description form element reference
+	 * Get File Path form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getDescriptionFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getFilePathFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("description")->getFormElement($formElementOverride);
+		return $this->getField("file_path")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set Record Status value
+	 * Set File Size value
 	 * @param mixed $value
-	 * @return Group
+	 * @return BackupsHourly
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setRecordStatusIdVal($value = null)
+	public function setFileSizeVal($value = null)
 	{
-		$this->setFieldValue("record_status_id", $value);
+		$this->setFieldValue("file_size", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Record Status value
+	 * Get File Size value
 	 * @return mixed
 	 */
-	public function getRecordStatusIdVal()
+	public function getFileSizeVal()
 	{
-		return $this->getFieldValue("record_status_id");
+		return $this->getFieldValue("file_size");
 	}
 
 	/**
-	 * Get Record Status field reference
+	 * Get File Size field reference
 	 * @return Field
 	 */
-	public function getRecordStatusIdFld()
+	public function getFileSizeFld()
 	{
-		return $this->getField("record_status_id");
+		return $this->getField("file_size");
 	}
 
 	/**
-	 * Get Record Status form element reference
+	 * Get File Size form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getRecordStatusIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getFileSizeFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("record_status_id")->getFormElement($formElementOverride);
+		return $this->getField("file_size")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Get RecordStatus Object
-	 * @return \Lavdiu\DemoApp\RecordStatus
+	 * Set Created On value
+	 * @param mixed $value
+	 * @return BackupsHourly
+	 * @throws InvalidForeignKeyValue
 	 */
-	public function getRecordStatusIdObj()
+	public function setCreatedOnVal($value = null)
 	{
-		if (is_numeric($this->getRecordStatusIdVal())) {
-			return new \Lavdiu\DemoApp\RecordStatus($this->getRecordStatusIdVal());
-		} else {
-			return new \Lavdiu\DemoApp\RecordStatus();
-		}
+		$this->setFieldValue("created_on", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Created On value
+	 * @return mixed
+	 */
+	public function getCreatedOnVal()
+	{
+		return $this->getFieldValue("created_on");
+	}
+
+	/**
+	 * Get Created On field reference
+	 * @return Field
+	 */
+	public function getCreatedOnFld()
+	{
+		return $this->getField("created_on");
+	}
+
+	/**
+	 * Get Created On form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getCreatedOnFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("created_on")->getFormElement($formElementOverride);
 	}
 
 	/**
@@ -315,7 +346,7 @@ class BaseGroup extends Database\BaseObject
 	 * Gets all rows and instantiates the object for all
 	 * Then returns an array of all objects
 	 * Please be careful, this can be bad for large tables
-	 * @return Group[]
+	 * @return BackupsHourly[]
 	 * @throws \Exception
 	 */
 	public function listAllObjects(): array

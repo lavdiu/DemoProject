@@ -134,9 +134,9 @@ ORDER BY order_tree
 
             $html .= "<li class='nav-item dropdown'>";
             if (count($lvl1['items']) > 0) {
-                $html .= "<a class='nav-link dropdown-toggle' href='javascript:;' data-bs-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'>{$lvl1['label']}</a>";
+                $html .= "<a class='nav-link dropdown-toggle' href='javascript:;' data-bs-toggle='dropdown' role='button' aria-haspopup='true' aria-expanded='false'><i class='{$lvl1['icon']}'>&nbsp;</i> {$lvl1['label']}</a>";
             } else {
-                $html .= "<a class='nav-link' role='button' href='?module={$moduleLvl1}'>{$lvl1['label']}</a>";
+                $html .= "<a class='nav-link' role='button' href='?module={$moduleLvl1}'><i class='{$lvl1['icon']}'>&nbsp;</i> {$lvl1['label']}</a>";
             }
 
             if (count($lvl1['items']) > 0) {
@@ -148,10 +148,10 @@ ORDER BY order_tree
                     }
 
                     if (count($lvl2['items']) < 1) {
-                        $html .= "<li><a class='dropdown-item' href='?module={$moduleLvl2}'><i class='{$lvl2['icon']}'>&nbsp;</i>{$lvl2['label']}</a></li>";
+                        $html .= "<li><a class='dropdown-item' href='?module={$moduleLvl2}'><i class='{$lvl2['icon']}'>&nbsp;</i> {$lvl2['label']}</a></li>";
                     } else {
                         $html .= "<li class='dropdown-submenu'>";
-                        $html .= "<a class='dropdown-item dropdown-toggle' href='?module={$moduleLvl2}'><i class='{$lvl2['icon']}'>&nbsp;</i>{$lvl2['label']}</a>";
+                        $html .= "<a class='dropdown-item dropdown-toggle' href='javascript:;'><i class='{$lvl2['icon']}'>&nbsp;</i> {$lvl2['label']}</a>";
                         $html .= "<ul class='dropdown-menu'>";
                         foreach ($lvl2['items'] as $lvl3) {
                             $moduleLvl3 = $lvl3['id'];
@@ -159,7 +159,7 @@ ORDER BY order_tree
                                 $moduleLvl3 = $lvl3['unique_name'];
                             }
 
-                            $html .= "<a class='dropdown-item' href='?module={$moduleLvl3}'><i class='{$lvl3['icon']}'>&nbsp;</i>{$lvl3['label']}</a>";
+                            $html .= "<a class='dropdown-item' href='?module={$moduleLvl3}'><i class='{$lvl3['icon']}'>&nbsp;</i> {$lvl3['label']}</a>";
                         }
                         $html .= "</ul>";
                     }
@@ -204,7 +204,11 @@ ORDER BY order_tree
      */
     public static function buildAndCacheMenu(): void
     {
+        try {
         $_SESSION['app_menu'] = RoutingTable::buildMenu();
+        }catch (\Throwable $e) {
+            $_SESSION['app_menu'] = '';
+        }
     }
 
     /**

@@ -122,6 +122,18 @@ class BasePersonLoginLog extends Database\BaseObject
 		$this->getTable()->addField($field);
 		$field = null;
 
+		$field = (new Field())
+			->setName("device_id")
+			->setLabel("Device")
+			->setPlaceHolder("Device")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
+		$this->getTable()->addField($field);
+		$field = null;
+
 		$this->getTable()->setPrimaryKey($pk);
 
 		/**
@@ -130,8 +142,16 @@ class BasePersonLoginLog extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("person_id"))
-				->setKeyName('demoapp_person_login_log_fk1')
+				->setKeyName('demoapp_lafperson_login_log_fk1')
 				->setReferencingTable("person")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
+				->setField($this->getTable()->getField("device_id"))
+				->setKeyName('person_login_log_device_fk')
+				->setReferencingTable("person_login_device")
 				->setReferencingField("id")
 		);
 
@@ -348,6 +368,59 @@ class BasePersonLoginLog extends Database\BaseObject
 	public function getUserAgentFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
 		return $this->getField("user_agent")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Set Device value
+	 * @param mixed $value
+	 * @return PersonLoginLog
+	 * @throws InvalidForeignKeyValue
+	 */
+	public function setDeviceIdVal($value = null)
+	{
+		$this->setFieldValue("device_id", $value);
+		return static::returnLeafClass();
+	}
+
+	/**
+	 * Get Device value
+	 * @return mixed
+	 */
+	public function getDeviceIdVal()
+	{
+		return $this->getFieldValue("device_id");
+	}
+
+	/**
+	 * Get Device field reference
+	 * @return Field
+	 */
+	public function getDeviceIdFld()
+	{
+		return $this->getField("device_id");
+	}
+
+	/**
+	 * Get Device form element reference
+	 * @param FormElementInterface|null $formElementOverride
+	 * @return ComponentInterface
+	 */
+	public function getDeviceIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	{
+		return $this->getField("device_id")->getFormElement($formElementOverride);
+	}
+
+	/**
+	 * Get PersonLoginDevice Object
+	 * @return \Lavdiu\DemoApp\PersonLoginDevice
+	 */
+	public function getDeviceIdObj()
+	{
+		if (is_numeric($this->getDeviceIdVal())) {
+			return new \Lavdiu\DemoApp\PersonLoginDevice($this->getDeviceIdVal());
+		} else {
+			return new \Lavdiu\DemoApp\PersonLoginDevice();
+		}
 	}
 
 	/**

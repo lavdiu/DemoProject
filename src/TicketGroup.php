@@ -3,22 +3,14 @@
 namespace Lavdiu\DemoApp;
 
 /**
- * Class RecordStatus
+ * Class TicketGroup
  * @package Lavdiu\DemoApp
- * Main Class for Table record_status
- * This class inherits functionality from BaseRecordStatus.
+ * Main Class for Table ticket_group
+ * This class inherits functionality from BaseTicketGroup.
  * It is generated only once, please include all logic and code here
  */
-class RecordStatus extends Base\BaseRecordStatus
+class TicketGroup extends Base\BaseTicketGroup
 {
-    const ACTIVE = 1;
-    const PENDING = 2;
-    const BANNED = 3;
-    const SUSPENDED = 4;
-    const DELETED = 5;
-    const ARCHIVED = 6;
-    const PAUSED = 7;
-
 	/**
 	 * Instructors constructor.
 	 * @param int $id
@@ -40,17 +32,17 @@ class RecordStatus extends Base\BaseRecordStatus
 	/**
 	 * Find one row by using the first result
 	 * @param array $keyValuePairs
-	 * @return RecordStatus
+	 * @return TicketGroup
 	 * @throws \Exception
 	 */
-	public static function findOne(array $keyValuePairs) : ?RecordStatus
+	public static function findOne(array $keyValuePairs) : ?TicketGroup
 	{
 		return parent::bOfindOne($keyValuePairs);
 	}
 	
 	/**
 	 * @param array $keyValuePairs
-	 * @return RecordStatus[]
+	 * @return TicketGroup[]
 	 * @throws \Exception
 	 */
 	public static function find(array $keyValuePairs = []) : array

@@ -67,7 +67,7 @@ class BaseCountry extends Database\BaseObject
 			->setPlaceHolder("Id")
 			->setRequired(true)
 			->setMaxLength(255)
-			->setAutoIncrement(true)
+			->setAutoIncrement(false)
 			->setUnique(false)
 			->setType(new Database\Field\TypeInteger());
 		$pk->addField($field);
@@ -78,7 +78,7 @@ class BaseCountry extends Database\BaseObject
 			->setName("iso")
 			->setLabel("Iso")
 			->setPlaceHolder("Iso")
-			->setRequired(true)
+			->setRequired(false)
 			->setMaxLength(2)
 			->setAutoIncrement(false)
 			->setUnique(false)
@@ -90,7 +90,7 @@ class BaseCountry extends Database\BaseObject
 			->setName("label")
 			->setLabel("Label")
 			->setPlaceHolder("Label")
-			->setRequired(true)
+			->setRequired(false)
 			->setMaxLength(80)
 			->setAutoIncrement(false)
 			->setUnique(false)

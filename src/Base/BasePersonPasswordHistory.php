@@ -118,7 +118,7 @@ class BasePersonPasswordHistory extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("person_id"))
-				->setKeyName('demoapp_person_pass_history_login_log_fk1')
+				->setKeyName('demoapp_lafperson_pass_history_login_log_fk1')
 				->setReferencingTable("person")
 				->setReferencingField("id")
 		);

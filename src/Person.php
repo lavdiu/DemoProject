@@ -6,6 +6,7 @@ use Laf\Database\Db;
 use Laf\UI\Grid\PhpGrid\ActionButton;
 use Laf\UI\Grid\PhpGrid\Column;
 use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\Util\Settings;
 use Laf\Util\UrlParser;
 
 /**
@@ -20,12 +21,6 @@ class Person extends Base\BasePerson
 
     public static $loggedInstance = null;
 
-    const LULZIM = 1;
-    const ARIANIT = 3;
-    const RAIF = 15;
-    const FATMIR = 4;
-    const RREZON = 56;
-
     /**
      * Instructors constructor.
      * @param int $id
@@ -39,8 +34,6 @@ class Person extends Base\BasePerson
 
     public function translateFields()
     {
-
-
     }
 
     /**
@@ -389,7 +382,6 @@ class Person extends Base\BasePerson
             } else if (isset($_GET['api_key'])) {
                 $person = self::getActiveUserByApiKey($_GET['api_key']);
                 $person->setSessionData();
-                $person->setFilialetSession(($person->getFilialetArray()[0]));
                 self::$loggedInstance = $person;
             } else {
                 self::$loggedInstance = new self();
@@ -403,8 +395,7 @@ class Person extends Base\BasePerson
      * Get logged user id
      * @return int
      */
-    public
-    static function getLoggedUserId()
+    public static function getLoggedUserId()
     {
         $person = self::getLoggedUserInstance();
         return $person->getIdVal();
@@ -415,8 +406,7 @@ class Person extends Base\BasePerson
      * @return bool
      * @throws \Exception
      */
-    public
-    function accountExists($username)
+    public function accountExists($username)
     {
         $person = $this->findOne(['username' => $username]);
         return $person->getUsernameVal() == $username;
@@ -426,29 +416,12 @@ class Person extends Base\BasePerson
      * Check if the user is logged in
      * @return bool
      */
-    public
-    static function isLoggedIn()
+    public static function isLoggedIn()
     {
         $user = self::getLoggedUserInstance();
         return $user->recordExists() && $user->getRecordStatusIdVal() == RecordStatus::ACTIVE;
     }
 
-    public
-    function getFilialetArray(): array
-    {
-        return explode(',', $this->getFilialetVal());
-    }
-
-    /**
-     * @return array
-     * @throws \Exception
-     */
-    public
-    function getKompaniteArray()
-    {
-        $kompanite = Db::getOne(sprintf("SELECT GROUP_CONCAT(DISTINCT kompania) FROM filialet WHERE fid IN(%s);", $this->getFilialetVal()));
-        return explode(',', $kompanite);
-    }
 
     /**
      * @param string $oldPassword
@@ -456,8 +429,7 @@ class Person extends Base\BasePerson
      * @return bool
      * @throws \Laf\Exception\InvalidForeignKeyValue
      */
-    public
-    function changePassword(string $oldPassword, string $newPassword): bool
+    public function changePassword(string $oldPassword, string $newPassword): bool
     {
         if (mb_strlen($newPassword) < 6) {
             return false;
@@ -472,52 +444,25 @@ class Person extends Base\BasePerson
         return false;
     }
 
-    public
-    function getModuletArray(): array
+    public function getModuletArray(): array
     {
         return explode(',', $this->getModuletVal());
     }
 
-    public
-    function setSessionData(): void
+    public function setSessionData(): void
     {
-        require_once __DIR__ . '/../../../data/menu.php';
-        global $_SHQIPERI;
-        $_SESSION['person']['id'] = $this->getIdVal();
-        $_SESSION['uid'] = $this->getIdVal();
-        $_SESSION['user_email'] = $this->getEmailVal();
-        $_SESSION['uname'] = $this->getUsernameVal();
-        $_SESSION['emri'] = $this->getNameVal();
-        $_SESSION['filialet'] = $this->getFilialetVal();
-        if (strpos($this->getFilialetVal(), ',') !== false)
-            $_SESSION['filialet_arr'] = explode(',', $this->getFilialetVal());
-        else {
-            if (!is_numeric($this->getFilialetVal()) || $this->getFilialetVal() < 1) {
-                session_destroy();
-                throw new \Exception('Shfrytezuesi i dhene nuk ka casje ne asne filiale dhe nuk mund te hap asm');
-            }
-            $_SESSION['filialet_arr'] = [$this->getFilialetVal()];
-        }
 
-        $_SESSION['tipi'] = $this->getPersonTypeIdVal();
-        Filialet::setFilialjaAktualeSession($_SESSION['filialet_arr'][0]);
-        #$_SESSION['filialja'] = $_SESSION['filialet_arr'][0];
-        if (!array_key_exists('b', $_SESSION)) {
-            $_SESSION['b'] = 0;
-        }
+
+        $_SESSION['person']['id'] = $this->getIdVal();
         $_SESSION['mod_comma'] = $this->getModuletVal();
         $_SESSION['mod_array'] = explode(',', $this->getModuletVal());
-        $_SESSION['menu'] = \gjeneroMenu();
-        if ($_SHQIPERI) {
-            $_SESSION['shqiperi'] = 1;
-        }
+
     }
 
     /**
      * @return PhpGrid
      */
-    public
-    function getUserGroupsGrid(): PhpGrid
+    public function getUserGroupsGrid(): PhpGrid
     {
         if (!is_numeric(UrlParser::getId())) {
             return new PhpGrid('unknown');
@@ -525,7 +470,7 @@ class Person extends Base\BasePerson
 
         $grid = new PhpGrid('person_user_group');
         $grid->setAllowExport(false);
-        $grid->setTitle('Grupet')
+        $grid->setTitle('Groups')
             ->setRowsPerPage(20)
             ->setSqlQuery(sprintf('
 SELECT * FROM (
@@ -542,9 +487,9 @@ WHERE pg.person_id = %s
 ', UrlParser::getId()));
 
         $grid->addColumn(new Column('id', 'Id', true));
-        $grid->addColumn(new Column('label', 'Grupi', true));
-        $grid->addColumn(new Column('description', 'Përshkrimi', true));
-        $grid->addColumn(new Column('status', 'Gjendja', true));
+        $grid->addColumn(new Column('label', 'Group', true));
+        $grid->addColumn(new Column('description', 'Description', true));
+        $grid->addColumn(new Column('status', 'Status', true));
         $deleteLink = new ActionButton('Delete', sprintf('?module=%s&action=deleteGroup&id={id}', UrlParser::getModule()), 'fa fa-trash');
         $deleteLink->addAttribute('onclick', "return confirm('Sigurte?')");
         $grid->addActionButton($deleteLink);
@@ -558,8 +503,7 @@ WHERE pg.person_id = %s
     /**
      * @return PhpGrid
      */
-    public
-    function getUserRoleGrid(): PhpGrid
+    public function getUserRoleGrid(): PhpGrid
     {
         if (!is_numeric(UrlParser::getId())) {
             return new PhpGrid('unknown');
@@ -567,7 +511,7 @@ WHERE pg.person_id = %s
 
         $grid = new PhpGrid('person_user_role');
         $grid->setAllowExport(false);
-        $grid->setTitle('Grupet')
+        $grid->setTitle('Groups')
             ->setRowsPerPage(20)
             ->setSqlQuery(sprintf('
 SELECT * FROM (
@@ -588,12 +532,12 @@ SELECT * FROM (
 )l1 
 ', UrlParser::getId()));
 
-        $grid->addColumn(new Column('group_id', 'Grupi Id', true));
-        $grid->addColumn(new Column('role_id', 'Roli ID', true));
-        $grid->addColumn(new Column('role_label', 'Roli', true));
-        $grid->addColumn(new Column('group_label', 'Grupi', true));
-        $grid->addColumn(new Column('group_status', 'Grupi Gjendja', true));
-        $grid->addColumn(new Column('role_status', 'Roli Gjendja', true));
+        $grid->addColumn(new Column('group_id', 'Group Id', true));
+        $grid->addColumn(new Column('role_id', 'Role ID', true));
+        $grid->addColumn(new Column('role_label', 'Role', true));
+        $grid->addColumn(new Column('group_label', 'Group', true));
+        $grid->addColumn(new Column('group_status', 'Group Status', true));
+        $grid->addColumn(new Column('role_status', 'Role Status', true));
         $grid->setSortDetails('role_label', 'ASC')
             ->setShowTitle(false)
             ->setShowSearchBar(false)
@@ -604,8 +548,7 @@ SELECT * FROM (
     /**
      * @return PhpGrid
      */
-    public
-    function getUserLoginLogGrid(): PhpGrid
+    public function getUserLoginLogGrid(): PhpGrid
     {
         if (!is_numeric(UrlParser::getId())) {
             return new PhpGrid('unknown');
@@ -613,7 +556,7 @@ SELECT * FROM (
 
         $grid = new PhpGrid('person_login_log');
         $grid->setAllowExport(false);
-        $grid->setTitle('Hyrjet')
+        $grid->setTitle('Login Log')
             ->setRowsPerPage(20)
             ->setSqlQuery(sprintf('
 SELECT * FROM (
@@ -630,10 +573,10 @@ SELECT * FROM (
 ', UrlParser::getId()));
 
         $grid->addColumn(new Column('id', 'Id', false));
-        $grid->addColumn(new Column('device_name', 'Paisja', true));
-        $grid->addColumn(new Column('created_on', 'Data dhe Koha', true));
-        $grid->addColumn(new Column('ip_address', 'IP Adresa', true));
-        $grid->addColumn(new Column('user_agent', 'Browseri', true));
+        $grid->addColumn(new Column('device_name', 'Device', true));
+        $grid->addColumn(new Column('created_on', 'Date', true));
+        $grid->addColumn(new Column('ip_address', 'IP Address', true));
+        $grid->addColumn(new Column('user_agent', 'Browser', true));
         $grid->setSortDetails('id', 'DESC')
             ->setShowTitle(false)
             ->setShowSearchBar(false)
@@ -644,8 +587,7 @@ SELECT * FROM (
     /**
      * @return PhpGrid
      */
-    public
-    function getUserActivityGrid(): PhpGrid
+    public function getUserActivityGrid(): PhpGrid
     {
         if (!is_numeric(UrlParser::getId())) {
             return new PhpGrid('unknown');
@@ -653,7 +595,7 @@ SELECT * FROM (
 
         $grid = new PhpGrid('person_activity_log');
         $grid->setAllowExport(false);
-        $grid->setTitle('Aktiviteti i Shfrytëzuesit')
+        $grid->setTitle('User Activity')
             ->setRowsPerPage(20)
             ->setSqlQuery("
             SELECT * FROM (
@@ -672,10 +614,10 @@ SELECT * FROM (
 ");
 
         $grid->addColumn(new Column('syslogid', 'Id', false));
-        $grid->addColumn(new Column('grupi', 'Grupi', true));
-        $grid->addColumn(new Column('nengrupi', 'Nëngrupi', true));
-        $grid->addColumn(new Column('koha', 'Data dhe Koha', true));
-        $grid->addColumn(new Column('veprimi', 'Veprimi', true));
+        $grid->addColumn(new Column('grupi', 'Group', true));
+        $grid->addColumn(new Column('nengrupi', 'Subgroup', true));
+        $grid->addColumn(new Column('koha', 'Date', true));
+        $grid->addColumn(new Column('veprimi', 'Action', true));
         $grid->addColumn(new Column('ip', 'IP', true));
         $grid->addColumn(new Column('browser', 'Browser', true));
         $grid->setSortDetails('syslogid', 'DESC')
@@ -685,70 +627,21 @@ SELECT * FROM (
         return $grid;
     }
 
-    public
-    static function getIcon(): ?string
+    public static function getIcon(): ?string
     {
         return 'fas fa-users';
     }
 
-    /**
-     * kontrollo nese useri ka filiale te caktuar per login
-     * dhe nese ka casje ne ate filiale
-     * @return bool
-     */
-    public
-    function mundTeHyjMeAutoFiliale(): bool
-    {
-
-        return is_numeric($this->getFilialjaAutoHyrjaIdVal())
-            && in_array($this->getFilialjaAutoHyrjaIdVal(), $this->getFilialetArray());
-    }
-
-    /**
-     * @param int $filialjaId
-     */
-    public
-    function setFilialetSession(int $filialjaId): void
-    {
-        global $_FILIALET_VETEM_B;
-
-        $filialja = new Filialet($filialjaId);
-
-        /**
-         * @deprecated
-         */
-        $_SESSION['kompania'] = $filialja->getKompaniaVal();
-        $_SESSION['filialja'] = $filialja->getFidVal();
-        Filialet::setFilialjaAktualeSession($filialja->getFidVal());
-        $_SESSION['filialja_emri'] = $filialja->getEmriVal();
-        $_SESSION['filialja_ngjyra'] = $filialja->getNgjyraVal();
-        $_SESSION['b'] = 0;
-        if (in_array($filialjaId, $_FILIALET_VETEM_B)) {
-            $_SESSION['b'] = 1;
-        }
-    }
-
-    /**
-     * tregon nese punetori ka te caktuar vetem nje filiale
-     * @return bool
-     */
-    public
-    function kaVetem1Filiale(): bool
-    {
-        return count($this->getFilialetArray()) == 1;
-    }
 
     /**
      * @return bool
      */
-    public
-    function requiresDeviceApproval(): bool
+    public function requiresDeviceApproval(): bool
     {
         return $this->getRequiresLoginDeviceApprovalVal() == 1;
     }
 
-    public
-    function isDeviceApproved(): bool
+    public function isDeviceApproved(): bool
     {
         global $_COOKIE;
         $cookie = SessionHelper::getCookieDeviceId();
@@ -783,8 +676,7 @@ SELECT * FROM (
     /**
      * @return PhpGrid
      */
-    public
-    function getUserDeviceGrid(): PhpGrid
+    public function getUserDeviceGrid(): PhpGrid
     {
         if (!is_numeric(UrlParser::getId())) {
             return new PhpGrid('unknown');
@@ -792,7 +684,7 @@ SELECT * FROM (
 
         $grid = new PhpGrid('person_device_list');
         $grid->setAllowExport(false);
-        $grid->setTitle('Paisjet')
+        $grid->setTitle('Devices')
             ->setRowsPerPage(20)
             ->setSqlQuery(sprintf('
         SELECT * FROM (
@@ -823,21 +715,21 @@ SELECT * FROM (
 ', UrlParser::getId()));
 
         $grid->addColumn(new Column('id', 'Id', true));
-        $grid->addColumn(new Column('device_name', 'Paisja', true));
-        $grid->addColumn(new Column('status', 'Gjendja', true));
-        $grid->addColumn(new Column('created_on', 'Regjistruar me', true));
-        $grid->addColumn(new Column('approved_on', 'Aprovuar me', true));
-        $grid->addColumn(new Column('approved_by', 'Aprovuar Nga', true));
-        $grid->addColumn(new Column('last_login_date', 'Hyrja e fundit', true));
-        $grid->addColumn(new Column('ip_address', 'IP Adresa', true));
-        $grid->addColumn((new Column('user_agent', 'Shfletuesi', true))->setInnerElementCssStyle('font-size:10px;'));
+        $grid->addColumn(new Column('device_name', 'Device Name', true));
+        $grid->addColumn(new Column('status', 'Status', true));
+        $grid->addColumn(new Column('created_on', 'Created On', true));
+        $grid->addColumn(new Column('approved_on', 'Approved On', true));
+        $grid->addColumn(new Column('approved_by', 'Approved By', true));
+        $grid->addColumn(new Column('last_login_date', 'Last Login', true));
+        $grid->addColumn(new Column('ip_address', 'IP Address', true));
+        $grid->addColumn((new Column('user_agent', 'Browser', true))->setInnerElementCssStyle('font-size:10px;'));
         $grid->setSortDetails('id', 'DESC')
             ->setShowTitle(false)
             ->setShowSearchBar(false)
             ->setRowsPerPage(10);
 
-        $grid->addActionButton((new ActionButton('Aprovo', sprintf("?mod=%s&action=aprovoPaisje&id=%s&paisja={id}", UrlParser::getModule(), UrlParser::getId()), 'fa fa-check'))->addAttribute('onclick', "return confirm('Sigurte?');"));
-        $grid->addActionButton((new ActionButton('Refuzo', sprintf("?mod=%s&action=refuzoPaisje&id=%s&paisja={id}", UrlParser::getModule(), UrlParser::getId()), 'fas fa-trash'))->addAttribute('onclick', "return confirm('Sigurte?');"));
+        $grid->addActionButton((new ActionButton('Approve', sprintf("?mod=%s&action=approve_device&id=%s&device={id}", UrlParser::getModule(), UrlParser::getId()), 'fa fa-check'))->addAttribute('onclick', "return confirm('Sigurte?');"));
+        $grid->addActionButton((new ActionButton('Reject', sprintf("?mod=%s&action=reject_device&id=%s&device={id}", UrlParser::getModule(), UrlParser::getId()), 'fas fa-trash'))->addAttribute('onclick', "return confirm('Sigurte?');"));
         return $grid;
     }
 }

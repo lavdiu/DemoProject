@@ -9,18 +9,18 @@ use Laf\Database\PrimaryKey;
 use Laf\Database\ForeignKey;
 use Laf\UI\Form\FormElementInterface;
 use Laf\UI\ComponentInterface;
-use Lavdiu\DemoApp\Document;
+use Lavdiu\DemoApp\Note;
 use Laf\Exception\InvalidForeignKeyValue;
 
 /**
- * Class BaseDocument
+ * Class BaseNote
  * @package Lavdiu\DemoApp\Base
- * Base Class for Table document
- * Basic definition of the fields and relationship with the Database Table document
+ * Base Class for Table note
+ * Basic definition of the fields and relationship with the Database Table note
  * This class will be auto-generated every time there is a schema change
  * Please do not add code here. Instead add your code at the main class one directory above
  */
-class BaseDocument extends Database\BaseObject
+class BaseNote extends Database\BaseObject
 {
 	/**
 	 * Instructors constructor.
@@ -56,7 +56,7 @@ class BaseDocument extends Database\BaseObject
 	 */
 	private function buildClass()
 	{
-		$this->setTable(new Table('document'));
+		$this->setTable(new Table('note'));
 		/**
 		 * Generate field data
 		 */
@@ -75,45 +75,9 @@ class BaseDocument extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("file_name_original")
-			->setLabel("File Name Original")
-			->setPlaceHolder("File Name Original")
-			->setRequired(false)
-			->setMaxLength(255)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeVarchar());
-		$this->getTable()->addField($field);
-		$field = null;
-
-		$field = (new Field())
-			->setName("file_name")
-			->setLabel("File Name")
-			->setPlaceHolder("File Name")
-			->setRequired(false)
-			->setMaxLength(255)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeVarchar());
-		$this->getTable()->addField($field);
-		$field = null;
-
-		$field = (new Field())
-			->setName("file_extension")
-			->setLabel("File Extension")
-			->setPlaceHolder("File Extension")
-			->setRequired(false)
-			->setMaxLength(10)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeVarchar());
-		$this->getTable()->addField($field);
-		$field = null;
-
-		$field = (new Field())
-			->setName("file_size")
-			->setLabel("File Size")
-			->setPlaceHolder("File Size")
+			->setName("object_id")
+			->setLabel("Object")
+			->setPlaceHolder("Object")
 			->setRequired(false)
 			->setMaxLength(255)
 			->setAutoIncrement(false)
@@ -123,9 +87,21 @@ class BaseDocument extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("mime_type")
-			->setLabel("Mime Type")
-			->setPlaceHolder("Mime Type")
+			->setName("row_id")
+			->setLabel("Row")
+			->setPlaceHolder("Row")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("title")
+			->setLabel("Title")
+			->setPlaceHolder("Title")
 			->setRequired(false)
 			->setMaxLength(255)
 			->setAutoIncrement(false)
@@ -135,14 +111,14 @@ class BaseDocument extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("created_by")
-			->setLabel("Created By")
-			->setPlaceHolder("Created By")
+			->setName("BODY")
+			->setLabel("BODY")
+			->setPlaceHolder("BODY")
 			->setRequired(false)
-			->setMaxLength(255)
+			->setMaxLength(65535)
 			->setAutoIncrement(false)
 			->setUnique(false)
-			->setType(new Database\Field\TypeInteger());
+			->setType(new Database\Field\TypeText());
 		$this->getTable()->addField($field);
 		$field = null;
 
@@ -155,6 +131,18 @@ class BaseDocument extends Database\BaseObject
 			->setAutoIncrement(false)
 			->setUnique(false)
 			->setType(new Database\Field\TypeDateTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("created_by")
+			->setLabel("Created By")
+			->setPlaceHolder("Created By")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeInteger());
 		$this->getTable()->addField($field);
 		$field = null;
 
@@ -182,42 +170,6 @@ class BaseDocument extends Database\BaseObject
 		$this->getTable()->addField($field);
 		$field = null;
 
-		$field = (new Field())
-			->setName("parent_id")
-			->setLabel("Parent")
-			->setPlaceHolder("Parent")
-			->setRequired(false)
-			->setMaxLength(255)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeInteger());
-		$this->getTable()->addField($field);
-		$field = null;
-
-		$field = (new Field())
-			->setName("thumbnail_name")
-			->setLabel("Thumbnail Name")
-			->setPlaceHolder("Thumbnail Name")
-			->setRequired(false)
-			->setMaxLength(255)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeVarchar());
-		$this->getTable()->addField($field);
-		$field = null;
-
-		$field = (new Field())
-			->setName("encrypt_key")
-			->setLabel("Encrypt Key")
-			->setPlaceHolder("Encrypt Key")
-			->setRequired(false)
-			->setMaxLength(255)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeVarchar());
-		$this->getTable()->addField($field);
-		$field = null;
-
 		$this->getTable()->setPrimaryKey($pk);
 
 		/**
@@ -225,8 +177,16 @@ class BaseDocument extends Database\BaseObject
 		 */
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
+				->setField($this->getTable()->getField("object_id"))
+				->setKeyName('note_object_id_fk1')
+				->setReferencingTable("object_list")
+				->setReferencingField("id")
+		);
+
+		$this->getTable()->addForeignKey(
+			(new ForeignKey())
 				->setField($this->getTable()->getField("created_by"))
-				->setKeyName('demoapp_lafdocument_created_by_fk')
+				->setKeyName('note_creator_fk2')
 				->setReferencingTable("person")
 				->setReferencingField("id")
 		);
@@ -234,16 +194,8 @@ class BaseDocument extends Database\BaseObject
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
 				->setField($this->getTable()->getField("updated_by"))
-				->setKeyName('demoapp_lafdocument_updated_by_fk')
+				->setKeyName('note_updator_fk3')
 				->setReferencingTable("person")
-				->setReferencingField("id")
-		);
-
-		$this->getTable()->addForeignKey(
-			(new ForeignKey())
-				->setField($this->getTable()->getField("parent_id"))
-				->setKeyName('demoapp_lafdocument_parent_id_fk')
-				->setReferencingTable("document")
 				->setReferencingField("id")
 		);
 
@@ -252,7 +204,7 @@ class BaseDocument extends Database\BaseObject
 	/**
 	 * Set Id value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setIdVal($value = null)
@@ -290,209 +242,222 @@ class BaseDocument extends Database\BaseObject
 	}
 
 	/**
-	 * Set File Name Original value
+	 * Set Object value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setFileNameOriginalVal($value = null)
+	public function setObjectIdVal($value = null)
 	{
-		$this->setFieldValue("file_name_original", $value);
+		$this->setFieldValue("object_id", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get File Name Original value
+	 * Get Object value
 	 * @return mixed
 	 */
-	public function getFileNameOriginalVal()
+	public function getObjectIdVal()
 	{
-		return $this->getFieldValue("file_name_original");
+		return $this->getFieldValue("object_id");
 	}
 
 	/**
-	 * Get File Name Original field reference
+	 * Get Object field reference
 	 * @return Field
 	 */
-	public function getFileNameOriginalFld()
+	public function getObjectIdFld()
 	{
-		return $this->getField("file_name_original");
+		return $this->getField("object_id");
 	}
 
 	/**
-	 * Get File Name Original form element reference
+	 * Get Object form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getFileNameOriginalFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getObjectIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("file_name_original")->getFormElement($formElementOverride);
+		return $this->getField("object_id")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set File Name value
+	 * Get ObjectList Object
+	 * @return \Lavdiu\DemoApp\ObjectList
+	 */
+	public function getObjectIdObj()
+	{
+		if (is_numeric($this->getObjectIdVal())) {
+			return new \Lavdiu\DemoApp\ObjectList($this->getObjectIdVal());
+		} else {
+			return new \Lavdiu\DemoApp\ObjectList();
+		}
+	}
+
+	/**
+	 * Set Row value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setFileNameVal($value = null)
+	public function setRowIdVal($value = null)
 	{
-		$this->setFieldValue("file_name", $value);
+		$this->setFieldValue("row_id", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get File Name value
+	 * Get Row value
 	 * @return mixed
 	 */
-	public function getFileNameVal()
+	public function getRowIdVal()
 	{
-		return $this->getFieldValue("file_name");
+		return $this->getFieldValue("row_id");
 	}
 
 	/**
-	 * Get File Name field reference
+	 * Get Row field reference
 	 * @return Field
 	 */
-	public function getFileNameFld()
+	public function getRowIdFld()
 	{
-		return $this->getField("file_name");
+		return $this->getField("row_id");
 	}
 
 	/**
-	 * Get File Name form element reference
+	 * Get Row form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getFileNameFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getRowIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("file_name")->getFormElement($formElementOverride);
+		return $this->getField("row_id")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set File Extension value
+	 * Set Title value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setFileExtensionVal($value = null)
+	public function setTitleVal($value = null)
 	{
-		$this->setFieldValue("file_extension", $value);
+		$this->setFieldValue("title", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get File Extension value
+	 * Get Title value
 	 * @return mixed
 	 */
-	public function getFileExtensionVal()
+	public function getTitleVal()
 	{
-		return $this->getFieldValue("file_extension");
+		return $this->getFieldValue("title");
 	}
 
 	/**
-	 * Get File Extension field reference
+	 * Get Title field reference
 	 * @return Field
 	 */
-	public function getFileExtensionFld()
+	public function getTitleFld()
 	{
-		return $this->getField("file_extension");
+		return $this->getField("title");
 	}
 
 	/**
-	 * Get File Extension form element reference
+	 * Get Title form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getFileExtensionFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getTitleFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("file_extension")->getFormElement($formElementOverride);
+		return $this->getField("title")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set File Size value
+	 * Set BODY value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setFileSizeVal($value = null)
+	public function setBODYVal($value = null)
 	{
-		$this->setFieldValue("file_size", $value);
+		$this->setFieldValue("BODY", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get File Size value
+	 * Get BODY value
 	 * @return mixed
 	 */
-	public function getFileSizeVal()
+	public function getBODYVal()
 	{
-		return $this->getFieldValue("file_size");
+		return $this->getFieldValue("BODY");
 	}
 
 	/**
-	 * Get File Size field reference
+	 * Get BODY field reference
 	 * @return Field
 	 */
-	public function getFileSizeFld()
+	public function getBODYFld()
 	{
-		return $this->getField("file_size");
+		return $this->getField("BODY");
 	}
 
 	/**
-	 * Get File Size form element reference
+	 * Get BODY form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getFileSizeFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getBODYFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("file_size")->getFormElement($formElementOverride);
+		return $this->getField("BODY")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set Mime Type value
+	 * Set Created On value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setMimeTypeVal($value = null)
+	public function setCreatedOnVal($value = null)
 	{
-		$this->setFieldValue("mime_type", $value);
+		$this->setFieldValue("created_on", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Mime Type value
+	 * Get Created On value
 	 * @return mixed
 	 */
-	public function getMimeTypeVal()
+	public function getCreatedOnVal()
 	{
-		return $this->getFieldValue("mime_type");
+		return $this->getFieldValue("created_on");
 	}
 
 	/**
-	 * Get Mime Type field reference
+	 * Get Created On field reference
 	 * @return Field
 	 */
-	public function getMimeTypeFld()
+	public function getCreatedOnFld()
 	{
-		return $this->getField("mime_type");
+		return $this->getField("created_on");
 	}
 
 	/**
-	 * Get Mime Type form element reference
+	 * Get Created On form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getMimeTypeFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getCreatedOnFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("mime_type")->getFormElement($formElementOverride);
+		return $this->getField("created_on")->getFormElement($formElementOverride);
 	}
 
 	/**
 	 * Set Created By value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setCreatedByVal($value = null)
@@ -543,49 +508,9 @@ class BaseDocument extends Database\BaseObject
 	}
 
 	/**
-	 * Set Created On value
-	 * @param mixed $value
-	 * @return Document
-	 * @throws InvalidForeignKeyValue
-	 */
-	public function setCreatedOnVal($value = null)
-	{
-		$this->setFieldValue("created_on", $value);
-		return static::returnLeafClass();
-	}
-
-	/**
-	 * Get Created On value
-	 * @return mixed
-	 */
-	public function getCreatedOnVal()
-	{
-		return $this->getFieldValue("created_on");
-	}
-
-	/**
-	 * Get Created On field reference
-	 * @return Field
-	 */
-	public function getCreatedOnFld()
-	{
-		return $this->getField("created_on");
-	}
-
-	/**
-	 * Get Created On form element reference
-	 * @param FormElementInterface|null $formElementOverride
-	 * @return ComponentInterface
-	 */
-	public function getCreatedOnFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
-	{
-		return $this->getField("created_on")->getFormElement($formElementOverride);
-	}
-
-	/**
 	 * Set Updated On value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setUpdatedOnVal($value = null)
@@ -625,7 +550,7 @@ class BaseDocument extends Database\BaseObject
 	/**
 	 * Set Updated By value
 	 * @param mixed $value
-	 * @return Document
+	 * @return Note
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setUpdatedByVal($value = null)
@@ -676,139 +601,6 @@ class BaseDocument extends Database\BaseObject
 	}
 
 	/**
-	 * Set Parent value
-	 * @param mixed $value
-	 * @return Document
-	 * @throws InvalidForeignKeyValue
-	 */
-	public function setParentIdVal($value = null)
-	{
-		$this->setFieldValue("parent_id", $value);
-		return static::returnLeafClass();
-	}
-
-	/**
-	 * Get Parent value
-	 * @return mixed
-	 */
-	public function getParentIdVal()
-	{
-		return $this->getFieldValue("parent_id");
-	}
-
-	/**
-	 * Get Parent field reference
-	 * @return Field
-	 */
-	public function getParentIdFld()
-	{
-		return $this->getField("parent_id");
-	}
-
-	/**
-	 * Get Parent form element reference
-	 * @param FormElementInterface|null $formElementOverride
-	 * @return ComponentInterface
-	 */
-	public function getParentIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
-	{
-		return $this->getField("parent_id")->getFormElement($formElementOverride);
-	}
-
-	/**
-	 * Get Document Object
-	 * @return \Lavdiu\DemoApp\Document
-	 */
-	public function getParentIdObj()
-	{
-		if (is_numeric($this->getParentIdVal())) {
-			return new \Lavdiu\DemoApp\Document($this->getParentIdVal());
-		} else {
-			return new \Lavdiu\DemoApp\Document();
-		}
-	}
-
-	/**
-	 * Set Thumbnail Name value
-	 * @param mixed $value
-	 * @return Document
-	 * @throws InvalidForeignKeyValue
-	 */
-	public function setThumbnailNameVal($value = null)
-	{
-		$this->setFieldValue("thumbnail_name", $value);
-		return static::returnLeafClass();
-	}
-
-	/**
-	 * Get Thumbnail Name value
-	 * @return mixed
-	 */
-	public function getThumbnailNameVal()
-	{
-		return $this->getFieldValue("thumbnail_name");
-	}
-
-	/**
-	 * Get Thumbnail Name field reference
-	 * @return Field
-	 */
-	public function getThumbnailNameFld()
-	{
-		return $this->getField("thumbnail_name");
-	}
-
-	/**
-	 * Get Thumbnail Name form element reference
-	 * @param FormElementInterface|null $formElementOverride
-	 * @return ComponentInterface
-	 */
-	public function getThumbnailNameFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
-	{
-		return $this->getField("thumbnail_name")->getFormElement($formElementOverride);
-	}
-
-	/**
-	 * Set Encrypt Key value
-	 * @param mixed $value
-	 * @return Document
-	 * @throws InvalidForeignKeyValue
-	 */
-	public function setEncryptKeyVal($value = null)
-	{
-		$this->setFieldValue("encrypt_key", $value);
-		return static::returnLeafClass();
-	}
-
-	/**
-	 * Get Encrypt Key value
-	 * @return mixed
-	 */
-	public function getEncryptKeyVal()
-	{
-		return $this->getFieldValue("encrypt_key");
-	}
-
-	/**
-	 * Get Encrypt Key field reference
-	 * @return Field
-	 */
-	public function getEncryptKeyFld()
-	{
-		return $this->getField("encrypt_key");
-	}
-
-	/**
-	 * Get Encrypt Key form element reference
-	 * @param FormElementInterface|null $formElementOverride
-	 * @return ComponentInterface
-	 */
-	public function getEncryptKeyFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
-	{
-		return $this->getField("encrypt_key")->getFormElement($formElementOverride);
-	}
-
-	/**
 	 * Get all rows as associative array
 	 * @return string[]
 	 * @throws \Exception
@@ -825,7 +617,7 @@ class BaseDocument extends Database\BaseObject
 	 * Gets all rows and instantiates the object for all
 	 * Then returns an array of all objects
 	 * Please be careful, this can be bad for large tables
-	 * @return Document[]
+	 * @return Note[]
 	 * @throws \Exception
 	 */
 	public function listAllObjects(): array

@@ -187,6 +187,12 @@ function drawRatingStars($score = 0, $count = 0)
  * @param $string
  * @return string
  */
-function outputString($string){
+function outputString($string)
+{
     return nl2br(strip_tags($string, 'br'));
+}
+
+function isDev(): bool
+{
+    return true;
 }

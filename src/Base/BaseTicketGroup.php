@@ -9,18 +9,18 @@ use Laf\Database\PrimaryKey;
 use Laf\Database\ForeignKey;
 use Laf\UI\Form\FormElementInterface;
 use Laf\UI\ComponentInterface;
-use Lavdiu\DemoApp\Group;
+use Lavdiu\DemoApp\TicketGroup;
 use Laf\Exception\InvalidForeignKeyValue;
 
 /**
- * Class BaseGroup
+ * Class BaseTicketGroup
  * @package Lavdiu\DemoApp\Base
- * Base Class for Table group
- * Basic definition of the fields and relationship with the Database Table group
+ * Base Class for Table ticket_group
+ * Basic definition of the fields and relationship with the Database Table ticket_group
  * This class will be auto-generated every time there is a schema change
  * Please do not add code here. Instead add your code at the main class one directory above
  */
-class BaseGroup extends Database\BaseObject
+class BaseTicketGroup extends Database\BaseObject
 {
 	/**
 	 * Instructors constructor.
@@ -56,7 +56,7 @@ class BaseGroup extends Database\BaseObject
 	 */
 	private function buildClass()
 	{
-		$this->setTable(new Table('group'));
+		$this->setTable(new Table('ticket_group'));
 		/**
 		 * Generate field data
 		 */
@@ -79,18 +79,6 @@ class BaseGroup extends Database\BaseObject
 			->setLabel("Label")
 			->setPlaceHolder("Label")
 			->setRequired(false)
-			->setMaxLength(255)
-			->setAutoIncrement(false)
-			->setUnique(false)
-			->setType(new Database\Field\TypeVarchar());
-		$this->getTable()->addField($field);
-		$field = null;
-
-		$field = (new Field())
-			->setName("description")
-			->setLabel("Description")
-			->setPlaceHolder("Description")
-			->setRequired(true)
 			->setMaxLength(65535)
 			->setAutoIncrement(false)
 			->setUnique(false)
@@ -99,9 +87,21 @@ class BaseGroup extends Database\BaseObject
 		$field = null;
 
 		$field = (new Field())
-			->setName("record_status_id")
-			->setLabel("Record Status")
-			->setPlaceHolder("Record Status")
+			->setName("created_on")
+			->setLabel("Created On")
+			->setPlaceHolder("Created On")
+			->setRequired(false)
+			->setMaxLength(255)
+			->setAutoIncrement(false)
+			->setUnique(false)
+			->setType(new Database\Field\TypeDateTime());
+		$this->getTable()->addField($field);
+		$field = null;
+
+		$field = (new Field())
+			->setName("created_by")
+			->setLabel("Created By")
+			->setPlaceHolder("Created By")
 			->setRequired(false)
 			->setMaxLength(255)
 			->setAutoIncrement(false)
@@ -117,9 +117,9 @@ class BaseGroup extends Database\BaseObject
 		 */
 		$this->getTable()->addForeignKey(
 			(new ForeignKey())
-				->setField($this->getTable()->getField("record_status_id"))
-				->setKeyName('group_record_status_id_fk')
-				->setReferencingTable("record_status")
+				->setField($this->getTable()->getField("created_by"))
+				->setKeyName('ticketgroup_created_by_fk1')
+				->setReferencingTable("person")
 				->setReferencingField("id")
 		);
 
@@ -128,7 +128,7 @@ class BaseGroup extends Database\BaseObject
 	/**
 	 * Set Id value
 	 * @param mixed $value
-	 * @return Group
+	 * @return TicketGroup
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setIdVal($value = null)
@@ -168,7 +168,7 @@ class BaseGroup extends Database\BaseObject
 	/**
 	 * Set Label value
 	 * @param mixed $value
-	 * @return Group
+	 * @return TicketGroup
 	 * @throws InvalidForeignKeyValue
 	 */
 	public function setLabelVal($value = null)
@@ -206,95 +206,95 @@ class BaseGroup extends Database\BaseObject
 	}
 
 	/**
-	 * Set Description value
+	 * Set Created On value
 	 * @param mixed $value
-	 * @return Group
+	 * @return TicketGroup
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setDescriptionVal($value = null)
+	public function setCreatedOnVal($value = null)
 	{
-		$this->setFieldValue("description", $value);
+		$this->setFieldValue("created_on", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Description value
+	 * Get Created On value
 	 * @return mixed
 	 */
-	public function getDescriptionVal()
+	public function getCreatedOnVal()
 	{
-		return $this->getFieldValue("description");
+		return $this->getFieldValue("created_on");
 	}
 
 	/**
-	 * Get Description field reference
+	 * Get Created On field reference
 	 * @return Field
 	 */
-	public function getDescriptionFld()
+	public function getCreatedOnFld()
 	{
-		return $this->getField("description");
+		return $this->getField("created_on");
 	}
 
 	/**
-	 * Get Description form element reference
+	 * Get Created On form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getDescriptionFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getCreatedOnFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("description")->getFormElement($formElementOverride);
+		return $this->getField("created_on")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Set Record Status value
+	 * Set Created By value
 	 * @param mixed $value
-	 * @return Group
+	 * @return TicketGroup
 	 * @throws InvalidForeignKeyValue
 	 */
-	public function setRecordStatusIdVal($value = null)
+	public function setCreatedByVal($value = null)
 	{
-		$this->setFieldValue("record_status_id", $value);
+		$this->setFieldValue("created_by", $value);
 		return static::returnLeafClass();
 	}
 
 	/**
-	 * Get Record Status value
+	 * Get Created By value
 	 * @return mixed
 	 */
-	public function getRecordStatusIdVal()
+	public function getCreatedByVal()
 	{
-		return $this->getFieldValue("record_status_id");
+		return $this->getFieldValue("created_by");
 	}
 
 	/**
-	 * Get Record Status field reference
+	 * Get Created By field reference
 	 * @return Field
 	 */
-	public function getRecordStatusIdFld()
+	public function getCreatedByFld()
 	{
-		return $this->getField("record_status_id");
+		return $this->getField("created_by");
 	}
 
 	/**
-	 * Get Record Status form element reference
+	 * Get Created By form element reference
 	 * @param FormElementInterface|null $formElementOverride
 	 * @return ComponentInterface
 	 */
-	public function getRecordStatusIdFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
+	public function getCreatedByFormElement(FormElementInterface $formElementOverride = null) : ComponentInterface
 	{
-		return $this->getField("record_status_id")->getFormElement($formElementOverride);
+		return $this->getField("created_by")->getFormElement($formElementOverride);
 	}
 
 	/**
-	 * Get RecordStatus Object
-	 * @return \Lavdiu\DemoApp\RecordStatus
+	 * Get Person Object
+	 * @return \Lavdiu\DemoApp\Person
 	 */
-	public function getRecordStatusIdObj()
+	public function getCreatedByObj()
 	{
-		if (is_numeric($this->getRecordStatusIdVal())) {
-			return new \Lavdiu\DemoApp\RecordStatus($this->getRecordStatusIdVal());
+		if (is_numeric($this->getCreatedByVal())) {
+			return new \Lavdiu\DemoApp\Person($this->getCreatedByVal());
 		} else {
-			return new \Lavdiu\DemoApp\RecordStatus();
+			return new \Lavdiu\DemoApp\Person();
 		}
 	}
 
@@ -315,7 +315,7 @@ class BaseGroup extends Database\BaseObject
 	 * Gets all rows and instantiates the object for all
 	 * Then returns an array of all objects
 	 * Please be careful, this can be bad for large tables
-	 * @return Group[]
+	 * @return TicketGroup[]
 	 * @throws \Exception
 	 */
 	public function listAllObjects(): array
