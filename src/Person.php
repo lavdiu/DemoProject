@@ -449,10 +449,14 @@ class Person extends Base\BasePerson
         return explode(',', $this->getModuletVal());
     }
 
+    public static function clearSession()
+    {
+        unset($_SESSION['person']);
+        session_destroy();
+    }
+
     public function setSessionData(): void
     {
-
-
         $_SESSION['person']['id'] = $this->getIdVal();
         $_SESSION['mod_comma'] = $this->getModuletVal();
         $_SESSION['mod_array'] = explode(',', $this->getModuletVal());

@@ -1,0 +1,124 @@
+<?php
+
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+use Laf\UI\Container\Div;
+use Laf\UI\Container\TabContainer;
+use Laf\UI\Container\TabItem;
+use Lavdiu\DemoApp\BackupHourlyHelper;
+use Lavdiu\DemoApp\BackupsHourly;
+use Lavdiu\DemoApp\Factory;
+
+$id = UrlParser::getId();
+$backupshourly = new BackupsHourly($id);
+$form = $backupshourly->getForm();
+
+/**
+ * $form->setComponents([])
+ * ->addComponent($backupshourly->getIdFormElement())
+ * ->addComponent($backupshourly->getFileNameFormElement())
+ * ->addComponent($backupshourly->getFilePathFormElement())
+ * ->addComponent($backupshourly->getFileSizeFormElement())
+ * ->addComponent($backupshourly->getCreatedOnFormElement());
+ */
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-black text-decoration-none'>Backups Kohorë</a>");
+$page->setTitleIcon('far fa-list-alt');
+
+
+if ($form->isSubmitted()) {
+    $id = $form->processForm();
+    UrlParser::redirectToViewPage($id);
+    exit;
+}
+
+switch (UrlParser::getAction()) {
+    case 'delete':
+        if (file_exists($backupshourly->getFilePathVal())) {
+            if (unlink($backupshourly->getFilePathVal())) {
+                $backupshourly->hardDelete();
+            }
+        }
+
+        UrlParser::redirectToListPage();
+        break;
+    case 'download':
+        ob_clean();
+        header("Content-Type: application/zip");
+        header("Content-Disposition: attachment; filename=" . $backupshourly->getFileNameVal());
+        header("Content-Length: " . $backupshourly->getFileSizeVal());
+        readfile($backupshourly->getFilePathVal());
+        die();
+    case 'view':
+        $page->setContainerType(ContainerType::TYPE_DEFAULT);
+        $form->setDrawMode(DrawMode::VIEW);
+        $page->addComponent($form);
+        $page->addLink(new Link('Lista', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-success']));
+
+        $dd = new Dropdown('Veprime', '', 'fa fa-cogs', true);
+        $dd->addCssClass('btn-outline-success')
+            ->addCssClass('btn-sm');
+
+        $deleteLink = new Link('Fshij', UrlParser::getDeleteLink(), 'fa fa-trash', ['class' => 'btn btn-sm btn-outline-danger']);
+        $deleteLink->setConfirmationMessage('A jeni të sigurtë?');
+
+        $dd->addLink($deleteLink);
+        $page->addLink($dd);
+        $html->addComponent($page);
+
+        echo $html->draw();
+        break;
+    case 'run':
+        BackupHourlyHelper::run();;
+        UrlParser::redirectToListPage();
+    case 'list':
+    default:
+        $grid = new PhpGrid('backups_hourly_list');
+        $grid->setTitle('Lista')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `backups_hourly`.`id` AS backups_hourly_id
+		, `backups_hourly`.`file_name` AS backups_hourly_file_name
+		, `backups_hourly`.`file_path` AS backups_hourly_file_path
+		, `backups_hourly`.`file_size` AS backups_hourly_file_size
+		, `backups_hourly`.`created_on` AS backups_hourly_created_on
+	FROM backups_hourly backups_hourly
+	
+	WHERE 1=1 
+)l1 ');
+
+        $grid->addColumn(new Column('backups_hourly_id', 'Id', true, true));
+        $grid->addColumn(new Column('backups_hourly_file_name', 'File Name', true));
+        $grid->addColumn(new Column('backups_hourly_file_path', 'File Path', true));
+        $grid->addColumn(new Column('backups_hourly_file_size', 'File Size', true));
+        $grid->addColumn(new Column('backups_hourly_created_on', 'Created On', true));
+
+        $grid->addActionButton(new ActionButton('Shkarko', sprintf('?module=%s&action=download&id={backups_hourly_id}', UrlParser::getModule()), 'fas fa-download'));
+        $deleteLink = new ActionButton('Fshij', sprintf('?module=%s&action=delete&id={backups_hourly_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('A jeni të sigurtë?')");
+        $grid->addActionButton($deleteLink);
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        $page->addLink(new Link('Run', sprintf('?module=%s&action=run', UrlParser::getModule()), 'fa fa-play', [], ['btn btn-outline-danger btn-sm']));
+        $page->setContainerType(ContainerType::TYPE_FLUID);
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+}

@@ -9,11 +9,11 @@ use Lavdiu\DemoApp\Factory;
 
 $html = Factory::GeneralPage();
 $page = new AdminPage();
-$page->setTitle('Lista e proceseve');
+$page->setTitle(" <i class='fas fa-sign-in-alt'>&nbsp;</i> Process List");
 
 
 $grid = new PhpGrid('show_full_processlist');
-$grid->setTitle('Lista')
+$grid->setTitle('List')
     ->setRowsPerPage(20)
     ->setSqlQuery('
 SELECT * FROM (

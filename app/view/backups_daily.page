@@ -1,0 +1,106 @@
+<?php
+
+
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+
+use Laf\UI\Container\Div;
+use Laf\UI\Container\TabContainer;
+use Laf\UI\Container\TabItem;
+use Lavdiu\DemoApp\BackupDailyHelper;
+use Lavdiu\DemoApp\BackupsDaily;
+use Lavdiu\DemoApp\Factory;
+
+$id = UrlParser::getId();
+$backupsdaily = new BackupsDaily($id);
+$form = $backupsdaily->getForm();
+
+/**
+ * $form->setComponents([])
+ * ->addComponent($backupsdaily->getIdFormElement())
+ * ->addComponent($backupsdaily->getFileNameFormElement())
+ * ->addComponent($backupsdaily->getFilePathFormElement())
+ * ->addComponent($backupsdaily->getFileSizeFormElement())
+ * ->addComponent($backupsdaily->getCreatedOnFormElement());
+ */
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-black text-decoration-none'>Backups Ditorë</a>");
+$page->setTitleIcon('far fa-list-alt');
+
+
+if ($form->isSubmitted()) {
+    $id = $form->processForm();
+    UrlParser::redirectToViewPage($id);
+    exit;
+}
+
+switch (UrlParser::getAction()) {
+    case 'delete':
+        if (file_exists($backupsdaily->getFilePathVal())) {
+            if (unlink($backupsdaily->getFilePathVal())) {
+                $backupsdaily->hardDelete();
+            }
+        }
+        UrlParser::redirectToListPage();
+        break;
+    case 'download':
+        ob_clean();
+        header("Content-Type: application/zip");
+        header("Content-Disposition: attachment; filename=" . $backupsdaily->getFileNameVal());
+        header("Content-Length: " . $backupsdaily->getFileSizeVal());
+        readfile($backupsdaily->getFilePathVal());
+        die();
+    case 'run':
+        BackupDailyHelper::run();
+        UrlParser::redirectToListPage();
+    case 'list':
+    default:
+        $grid = new PhpGrid('backups_daily_list');
+        $grid->setTitle('Lista')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `backups_daily`.`id` AS backups_daily_id
+		, `backups_daily`.`file_name` AS backups_daily_file_name
+		, `backups_daily`.`file_path` AS backups_daily_file_path
+		, `backups_daily`.`file_size` AS backups_daily_file_size
+		, `backups_daily`.`created_on` AS backups_daily_created_on
+	FROM backups_daily backups_daily
+	
+	WHERE 1=1 
+)l1 ');
+
+        $grid->addColumn(new Column('backups_daily_id', 'Id', true, true));
+        $grid->addColumn(new Column('backups_daily_file_name', 'File Name', true));
+        $grid->addColumn(new Column('backups_daily_file_path', 'File Path', true));
+        $grid->addColumn(new Column('backups_daily_file_size', 'File Size', true));
+        $grid->addColumn(new Column('backups_daily_created_on', 'Created On', true));
+
+        $grid->addActionButton(new ActionButton('Shkarko', sprintf('?module=%s&action=download&id={backups_daily_id}', UrlParser::getModule()), 'fas fa-download'));
+        $deleteLink = new ActionButton('Fshij', sprintf('?module=%s&action=delete&id={backups_daily_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('A jeni të sigurtë?')");
+        $grid->addActionButton($deleteLink);
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        $page->addLink(new Link('Run', sprintf('?module=%s&action=run', UrlParser::getModule()), 'fa fa-play', [], ['btn btn-outline-danger btn-sm']));
+        $page->setContainerType(ContainerType::TYPE_FLUID);
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+}

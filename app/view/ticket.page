@@ -1,0 +1,238 @@
+<?php
+
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Container\Div;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Form\FormRowDisplayMode;
+use Laf\UI\Form\Input\Text;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\SimpleTable;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\Settings;
+use Laf\Util\UrlParser;
+use Lavdiu\DemoApp\Email;
+use Lavdiu\DemoApp\Factory;
+use Lavdiu\DemoApp\Person;
+use Lavdiu\DemoApp\Ticket;
+use Lavdiu\DemoApp\TicketStatus;
+
+$panel = new Div();
+$panel->setContainerType(ContainerType::TYPE_FLUID);
+
+$id = UrlParser::getId();
+$ticket = new Ticket($id);
+$form = $ticket->getForm();
+$form->getSubmitButton()->setValue('Save changes');
+$html = Factory::GeneralPage();
+
+$ticket->getField('requested_by')->setDbSelectionCriteria(['record_status_id' => '1']);
+$ticket->getField('assigned_to')->setDbSelectionCriteria(['record_status_id' => '1']);
+
+$div1 = new Div(['col-md container-fluid']);
+$div2 = new Div(['col-md container-fluid']);
+$row = new Div(['row']);
+
+
+$form->setComponents([]);
+$form->setFormRowDisplayMode(FormRowDisplayMode::INLINE);
+
+
+$div1
+    ->addComponent($ticket->getSubjectFormElement(new Text()))
+    ->addComponent($ticket->getTicketCategoryIdFormElement())
+    ->addComponent($ticket->getTicketGroupIdFormElement())
+    ->addComponent($ticket->getBodyFormElement())
+    ->addComponent($ticket->getTicketStatusIdFormElement());
+$div2
+    ->addComponent($ticket->getRequestedByFormElement())
+    ->addComponent($ticket->getAssignedToFormElement())
+    ->addComponent($ticket->getTicketPriorityIdFormElement())
+    ->addComponent($ticket->getExpectedCompletionDateFormElement())
+    ->addComponent($ticket->getCreatedOnFormElement())
+    ->addComponent($ticket->getResolutionFormElement());
+$row->addComponent($div1)
+    ->addComponent($div2);
+
+$form->addComponent($row);
+
+$page = new AdminPage();
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-decoration-none text-dark'>Ticket List</a>");
+$page->setTitleIcon(Ticket::getIcon());
+
+if ($form->isSubmitted()) {
+    $id = $form->processForm();
+    if (UrlParser::getAction() == 'new') {
+        $e = new Email();
+        $e->setEmailToVal(Settings::get('app.ticket_notification.email'))
+            ->setEmailCcVal($ticket->getCreatedByObj()->getEmailVal() . ',' . $ticket->getRequestedByObj()->getEmailVal())
+            ->setSubjectVal('Tiketë e re: ' . $ticket->getSubjectVal())
+            ->setFieldValueHTML('body', $ticket->getTicketDetailsAsHtml());
+        $e->store();
+        $e->send();
+    }
+    if (UrlParser::getAction() == 'update') {
+        $e = new Email();
+        $e->setEmailToVal(Settings::get('app.ticket_notification.email'))
+            ->setEmailCcVal($ticket->getCreatedByObj()->getEmailVal() . ',' . $ticket->getRequestedByObj()->getEmailVal())
+            ->setSubjectVal($ticket->getTicketStatusIdObj()->getLabelVal() . ' : ' . $ticket->getSubjectVal())
+            ->setFieldValueHTML('body', $ticket->getTicketDetailsAsHtml());
+        $e->store();
+        $e->send();
+    }
+    UrlParser::redirectToViewPage($id);
+    exit;
+}
+
+switch (UrlParser::getAction()) {
+    case 'update':
+        $page->setTitle("Tiketa {$ticket->getIdVal()}: " . $ticket->getSubjectVal());
+        $form->setDrawMode(DrawMode::UPDATE);
+        $div1->setDrawMode(DrawMode::UPDATE);
+        $div2->setDrawMode(DrawMode::UPDATE);
+        $page->addComponent($form);
+
+        $page->addLink(new Link('Anulo', UrlParser::getViewLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-dark']));
+        break;
+    case 'new':
+        $ticket->setRequestedByVal(Person::getLoggedUserId());
+        $ticket->setSubjectVal('');
+        $ticket->getRequestedByFormElement()->addAttribute('value', Person::getLoggedUserId());
+        $ticket->getTicketCategoryIdFormElement()->addAttribute('value', 1);
+        $ticket->getTicketStatusIdFormElement()->addAttribute('value', 1);
+        $ticket->getCreatedOnFormElement()->addWrapperCssStyleItem('display','none;');
+        $ticket->getResolutionFormElement()->addWrapperCssStyleItem('display','none;');
+        $form->setDrawMode(DrawMode::INSERT);
+        $div1->setDrawMode(DrawMode::INSERT);
+        $div2->setDrawMode(DrawMode::INSERT);
+        $page->addComponent($form);
+        $page->addLink(new Link('Cancel', UrlParser::getListLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-dark']));
+        break;
+    case 'delete':
+        if ($ticket->recordExists()) {
+            if ($ticket->canSoftDelete()) {
+                $ticket->softDelete();
+            } else {
+                $ticket->hardDelete();
+            }
+        }
+        UrlParser::redirectToListPage();
+        break;
+    case 'view':
+        $page->setTitle("Ticket {$ticket->getIdVal()}: " . $ticket->getSubjectVal());
+
+        $form->setDrawMode(DrawMode::VIEW);
+        $div1->setDrawMode(DrawMode::VIEW);
+        $div2->setDrawMode(DrawMode::VIEW);
+        $page->addComponent($form);
+        $diffLink = new Link();
+        $btnGroup = new Div(['btn-group']);
+        $diffLink->setValue('')
+            ->setHref(Settings::get('code_repo_link') . "-/compare/master...t" . UrlParser::getId())
+            ->setIcon('fa fa-code')
+            ->addCssClass('btn')
+            ->setTarget('_BLANK')
+            ->addCssClass('btn-outline-dark')
+            ->addCssClass('btn-sm')
+            ->addAttribute('title', 'Diff');
+        $listaLink = new Link('Lista', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-dark']);
+
+        $dd = new Dropdown('Opsione', '', 'fa fa-cogs', true);
+        $dd->addCssClass('btn-outline-dark')
+            ->addCssClass('btn-sm');
+        $editLink = new Link('Ndrysho', UrlParser::getUpdateLink(), 'fa fa-edit', ['class' => 'btn btn-sm btn-outline-warning']);
+        $deleteLink = new Link('Fshij', UrlParser::getDeleteLink(), 'fa fa-trash', ['class' => 'btn btn-sm btn-outline-danger']);
+        $deleteLink->setConfirmationMessage('Are you sure you want to delete this?');
+
+        $dd->addLink($editLink)
+            ->addLink($deleteLink);
+        $btnGroup->addComponent(new Link('Lista', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-dark']))
+            ->addComponent($diffLink)
+            ->addComponent($dd);
+        $page->addLink($btnGroup);
+        break;
+    case 'list':
+    default:
+        $filter = "AND t.ticket_status_id NOT iN (" . TicketStatus::RESOLVED . ", " . TicketStatus::DECLINED . ")";
+        if (filter_input(INPUT_GET, 'list') == 'all') {
+            $filter = "";
+        }
+
+        $grid = new PhpGrid('ticket_list');
+        $grid->setTitle('Ticket List')
+            ->setRowsPerPage(20)
+            ->setSqlQuery("
+        SELECT 
+           t.id
+          , tg.label as project
+          , requestor.name as requested_by
+          , t.subject as subject
+          , ts.label as status
+          , tc.label as category
+          , creator.name as created_by
+          , t.created_on as created_on
+          , approver.name as approved_by
+          , tp.label as priority
+          , pp.name as assigned_to
+          , t.expected_completion_date
+        FROM ticket t
+        LEFT JOIN person creator ON t.created_by = creator.id
+        LEFT JOIN person approver ON t.approved_by = approver.id
+        LEFT JOIN person requestor ON t.requested_by = requestor.id
+        LEFT JOIN ticket_status ts ON t.ticket_status_id = ts.id
+        LEFT JOIN ticket_category tc ON t.ticket_category_id = tc.id
+        LEFT JOIN ticket_priority tp ON t.ticket_priority_id = tp.id
+        LEFT JOIN person pp ON t.assigned_to = pp.id
+        LEFT JOIN ticket_group tg on t.ticket_group_id = tg.id
+        WHERE
+            1=1
+            {$filter}
+            ");
+
+        $grid->addColumn(((new Column('id', 'Id', true, true, sprintf('?module=%s&action=view&id={id}', UrlParser::getModule()), '', '', '', 'width:65px')))->setOuterElementCssStyle('width:80px;text-align:center;')->setInnerElementCssClass('btn btn-sm btn-outline-success'));
+        $grid->addColumn(new Column('project', 'Project', true));
+        $grid->addColumn(new Column('requested_by', 'Requested by', false));
+        $grid->addColumn(((new Column('subject', 'Subject', true, true, sprintf('?module=%s&action=view&id={id}', UrlParser::getModule()), '', 'text-decoration:none;'))));
+        $grid->addColumn(new Column('status', 'Status', true));
+        $grid->addColumn(new Column('category', 'Category', false));
+        $grid->addColumn(new Column('created_by', 'Created by', true));
+        $grid->addColumn(new Column('created_on', 'Created on', true));
+        $grid->addColumn(new Column('approved_by', 'Approved by', false));
+        $grid->addColumn(new Column('priority', 'Priority', true));
+        $grid->addColumn(new Column('assigned_to', 'Assigned to', true));
+        $grid->addColumn(new Column('expected_completion_date', 'Expected compl.', false));
+
+        $grid->addActionButton(new ActionButton('Hap', sprintf('?module=%s&action=view&id={id}', UrlParser::getModule()), 'fa fa-eye'));
+        $grid->addActionButton(new ActionButton('Git Diff', Settings::get('code_repo_link').'-/compare/master...t{id}', 'fab fa-github'));
+        $grid->addActionButton(new ActionButton('Ndrysho', sprintf('?module=%s&action=update&id={id}', UrlParser::getModule()), 'fa fa-edit'));
+        $deleteLink = new ActionButton('Fshij', sprintf('?module=%s&action=delete&id={id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('Are you sure?')");
+        $grid->addActionButton($deleteLink);
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        if (filter_input(INPUT_GET, 'list') == 'all') {
+            $page->addLink(new Link('Open Tickets', UrlParser::getListLink() . '&list=active', 'fa fa-list', [], ['btn btn-sm btn-outline-dark']));
+        } else {
+            $page->addLink(new Link('All Tickets', UrlParser::getListLink() . '&list=all', 'fa fa-list', [], ['btn btn-sm btn-outline-dark']));
+        }
+
+        $page->addLink(new Link('Projects', '?mod=ticket_group&action=list', 'fa fa-list', [], ['class' => 'btn btn-sm btn-outline-dark']));
+        $page->addLink(new Link('New', UrlParser::getNewLink(), 'fa fa-plus-square', [], ['class' => 'btn btn-sm btn-outline-success']));
+        $panel->setContainerType(ContainerType::TYPE_FLUID);
+        break;
+}
+
+
+$panel->addComponent($page);
+$html->addComponent($panel);
+echo $html->draw();
+

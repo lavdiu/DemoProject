@@ -9,17 +9,11 @@ use Laf\Util\UrlParser;
 
 
 if (UrlParser::getModule() == 'logout') {
-    unset($_SESSION['uid']);
-    unset($_SESSION['uname']);
-    unset($_SESSION['emri']);
-    unset($_SESSION['filialet']);
-    unset($_SESSION['filialja']);
-    unset($_SESSION['person']);
-    session_destroy();
+    Person::clearSession();
     header('location:?');
     exit;
 }
-if (isset($_POST['login']) && isset($_POST['username']) && $_POST['username'] != '' && isset($_POST['password']) && $_POST['password'] != '') {
+if (isset($_POST['login']) && $_POST['username'] ?? '' != '' && $_POST['password'] ?? '' != '') {
     $person = Person::login($_POST['username'], $_POST['password']);
     if ($person->recordExists()) {
         $person->setSessionData();

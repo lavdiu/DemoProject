@@ -75,10 +75,9 @@ INSERT INTO routing_table (id, parent_id, unique_name, label, page_file, is_defa
 
 
 
-INSERT INTO routing_table (id, parent_id, unique_name, label, icon, page_file, is_default, is_visible, ordinal, is_standalone, requires_login, actions, new_view, viewable_for_all)
-VALUES
- (null, 13, 'ticket', 'Ticket', 'fas fa-clipboard-list', 'opsione/ticket.page', 0, 1, 1, 0, 1, null, 1, 0)
-,(null, 13, 'ticket_group', 'Projects', 'fas fa-clipboard-list', 'ticket_group.page', null, 1, 2, null, 1, null, 0, 0);
+INSERT INTO routing_table (id, parent_id, unique_name, label, icon, page_file, is_default, is_visible, ordinal, is_standalone, requires_login, actions, viewable_for_all)VALUES
+ (null, 13, 'ticket', 'Ticket', 'fas fa-clipboard-list', 'ticket.page', 0, 1, 1, 0, 1, null, 0)
+,(null, 13, 'ticket_group', 'Projects', 'fas fa-clipboard-list', 'ticket_group.page', null, 1, 2, null, 1, null, 0);
 
 
 

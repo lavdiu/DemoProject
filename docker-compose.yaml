@@ -2,6 +2,7 @@ version: '3.9'
 
 volumes:
   mariadb_data_volume:
+  mariadb_backup_volume:
 networks:
   app_net:
     name: app_net
@@ -22,8 +23,10 @@ services:
       - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
       - MARIADB_ROOT_HOST=${MARIADB_ROOT_HOST}
       - MARIADB_DATABASE=${DB_NAME}
+      - MARIADB_BACKUP_VOLUME_MOUNTPOINT=${MARIADB_BACKUP_VOLUME_MOUNTPOINT}
     volumes:
       - mariadb_data_volume:/var/lib/mysql
+      - mariadb_backup_volume:${MARIADB_BACKUP_VOLUME_MOUNTPOINT}
       - ./migrations/init:/docker-entrypoint-initdb.d/
     restart: always
     networks:
@@ -45,8 +48,10 @@ services:
       - MARIADB_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
       - MARIADB_HOST=${DB_HOSTNAME}
       - APP_DOCKER_SETUP=development
+      - MARIADB_BACKUP_VOLUME_MOUNTPOINT=${MARIADB_BACKUP_VOLUME_MOUNTPOINT}
     volumes:
       - .:/var/www/html
+      - mariadb_backup_volume:${MARIADB_BACKUP_VOLUME_MOUNTPOINT}
     ports:
       - "8080:80"
       - "8443:443"
