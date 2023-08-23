@@ -169,9 +169,9 @@ ORDER BY order_tree
         }
         $person = Person::getLoggedUserInstance();
         return "
-<nav class='navbar navbar-expand-md navbar-dark bg-dark' id='".Settings::get('project.project_name')."MainMenu'>
+<nav class='navbar navbar-expand-md navbar-dark bg-dark' id='" . Settings::get('project.project_name') . "MainMenu'>
     <div class='container-fluid'>
-	<a class='navbar-brand' href='?'>".Settings::get('project.project_name')."</a>
+	<a class='navbar-brand' href='?'>" . Settings::get('project.project_name') . "</a>
 	<button class='navbar-toggler' type='button' data-bs-toggle='collapse' data-bs-target='#main-menu' aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
 		<span class='navbar-toggler-icon'></span>
 	</button>
@@ -182,7 +182,7 @@ ORDER BY order_tree
 		</ul>
 		<ul class='navbar-nav ms-auto'>
 			<li class='nav-item dropdown'>
-				<a class='nav-link dropdown-toggle' href='javascript:;' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>[".(($person->getNameVal())??'Not Logged in')."]<b class='caret'></b></a>
+				<a class='nav-link dropdown-toggle' href='javascript:;' data-bs-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>[" . (($person->getNameVal()) ?? 'Not Logged in') . "]<b class='caret'></b></a>
 				<ul class='dropdown-menu dropdown-menu-end'>
 					<li><a class='dropdown-item' href='?module=account_settings'><i class='fa fa-user-cog'></i> My Account</a></li>
 					<li><a class='dropdown-item' href='?module=change_password'><i class='fa fa-lock'></i> Change password</a></li>
@@ -205,8 +205,8 @@ ORDER BY order_tree
     public static function buildAndCacheMenu(): void
     {
         try {
-        $_SESSION['app_menu'] = RoutingTable::buildMenu();
-        }catch (\Throwable $e) {
+            $_SESSION['app_menu'] = RoutingTable::buildMenu();
+        } catch (\Throwable $e) {
             $_SESSION['app_menu'] = '';
         }
     }
@@ -220,5 +220,41 @@ ORDER BY order_tree
             self::buildAndCacheMenu();
         }
         return $_SESSION['app_menu'];
+    }
+
+    public function isDeviceRegistrationPage(): bool
+    {
+        return $this->getUniqueNameVal() == 'register_new_device';
+    }
+
+
+    public function listAll()
+    {
+        $sql = "SELECT * FROM `routing_table` ORDER BY `id` ASC;";
+        return Db::getAllAssoc($sql);
+    }
+
+    public function listoKryesoret()
+    {
+        $sql = "SELECT * FROM `routing_table` WHERE `parent_id` is NULL AND `is_visible`=1 ORDER BY `ordinal` ASC;";
+        return Db::getAllAssoc($sql);
+    }
+
+    public function listoNenModulet($id)
+    {
+        $sql = "SELECT * FROM `routing_table` WHERE `parent_id`=%s AND `is_visible`=1 ORDER BY `ordinal` ASC;";
+        return Db::getAllAssoc(sprintf($sql, ((int)$id)));
+    }
+
+    public function listoNenModuletMeHidden($id)
+    {
+        $sql = "SELECT * FROM `routing_table` WHERE `parent_id`=%s ORDER BY `ordinal` ASC;";
+        return Db::getAllAssoc(sprintf($sql, ((int)$id)));
+    }
+
+    public static function gjyshiID($id)
+    {
+        $sql = "select id from routing_table where id=(select parent_id from routing_table where id=(select parent_id from routing_table where id=%s));";
+        return Db::getAllAssoc(sprintf($sql, ((int)$id)));
     }
 }

@@ -446,7 +446,7 @@ class Person extends Base\BasePerson
 
     public function getModuletArray(): array
     {
-        return explode(',', $this->getModuletVal());
+        return explode(',', $this->getModuletVal()??'');
     }
 
     public static function clearSession()
@@ -459,7 +459,7 @@ class Person extends Base\BasePerson
     {
         $_SESSION['person']['id'] = $this->getIdVal();
         $_SESSION['mod_comma'] = $this->getModuletVal();
-        $_SESSION['mod_array'] = explode(',', $this->getModuletVal());
+        $_SESSION['mod_array'] = explode(',', $this->getModuletVal()??'');
 
     }
 

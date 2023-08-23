@@ -1,4 +1,8 @@
 <?php
+
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Lavdiu\DemoApp\Factory;
 use Lavdiu\DemoApp\RoutingTable;
 use Lavdiu\DemoApp\Person;
 
@@ -12,7 +16,7 @@ $uid = (int)filter_input(INPUT_GET, 'uid');
 if (isset($_POST['ruajPermissions'])) {
     if (is_numeric($uid)) {
         $person = new Person($uid);
-        $person->setModuletVal(join(',', $_POST['module']));
+        $person->setModuletVal(implode(',', ($_POST['module']??[])));
         $person->store();
     }
 }
@@ -26,11 +30,15 @@ function checked($mid, $modulet)
         return " checked='checked' ";
     else return "";
 }
-
-
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-decoration-none text-dark'>Access List</a>");
+$page->setTitleIcon(Person::getIcon());
+$html->addComponent($page);
+echo $html->draw();
 ?>
 
-<form method='post' action='?mod=<?php echo $_GET['mod']; ?>&uid=<?php echo $_GET['uid']; ?>'>
+<form method='post' action='?mod=<?php echo $_GET['module']; ?>&uid=<?php echo $_GET['uid']; ?>'>
 	<div class='col-xs-12'>
 		<div class='panel panel-primary'>
 			<div class="panel-heading clearfix"><b>Të drejtat e shfrytëzuesit: <b><?php echo $person->getNameVal(); ?></b></b>
