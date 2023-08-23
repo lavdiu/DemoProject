@@ -37,11 +37,10 @@ function setupConstants(): void
     $settings->setProperty('backups.mysql_dump_bin.path', '/usr/bin/mysqldump');
 
     $settings->setProperty('app.exception_notification_recipient.email', 'lulzimavdiu@gmail.com');
-    $settings->setProperty('app.ticket_notification.email', 'lulzimavdiu@gmail.com');
     $settings->setProperty('settings.email.sender_address', 'my@gmail.com');
     $settings->setProperty('comm.email_from', 'asm@autopjesepartner.com');
     $settings->setProperty('comm.email_from_name', $settings->getProperty('project.project_name'));
-    $settings->setProperty('comm.smtp.clientid', '51542685066-7isf0oq0lk3pnijtevfo3q58heqf32am.apps.googleusercontent.com');
+    $settings->setProperty('comm.smtp.clientid', '');
     $settings->setProperty('comm.smtp.secret', '');
     $settings->setProperty('comm.smtp.refresh_token', '');
     $settings->setProperty('settings.email.sender_address', 'asm@autopjesepartner.com');

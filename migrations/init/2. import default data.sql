@@ -56,11 +56,11 @@ INSERT INTO routing_table (id, parent_id, unique_name, label, page_file, is_defa
 INSERT INTO routing_table (id, parent_id, unique_name, label, page_file, is_default, is_visible, ordinal, requires_login, icon) VALUES
  (null,11, 'person', 'Person List', 'person.page', 0, 1, 0, 1, 'fas fa-user')
 ,(null,11, 'group', 'Group List', 'group.page', 0, 1, 0, 1, 'fas fa-user-friends')
-,(null,11, 'role', 'Role List', 'role.page', 0, 1, 0, 1, 'fas fa-user-tag');
+,(null,11, 'role', 'Role List', 'role.page', 0, 1, 0, 1, 'fas fa-user-tag')
+,(null,11, 'person_permissions', 'Person Permissions', 'person_permissions.page', 0, 0, 0, 1, 'fas fa-lock');
 
 INSERT INTO routing_table (id, parent_id, unique_name, label, page_file, is_default, is_visible, ordinal, requires_login, icon) VALUES
- (null, 15, 'grid_list', 'Grid List', 'grid_list.page', 0, 1, 10, 1, 'fa fa-list')
-,(null, 15, 'app_configuration', 'App Configuration', 'app_configuration.page', 0, 1, 20, 1, 'fas fa-cog');
+(null, 15, 'app_configuration', 'App Configuration', 'app_configuration.page', 0, 1, 20, 1, 'fas fa-cog');
 
 INSERT INTO routing_table (id, parent_id, unique_name, label, page_file, is_default, is_visible, ordinal, requires_login, icon) VALUES
 (null, 17, 'process_list', 'Process List',  'processlist.page', 0, 1, 10, 1, 'fas fa-sign-in-alt')

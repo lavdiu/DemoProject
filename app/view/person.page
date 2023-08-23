@@ -182,7 +182,7 @@ switch (UrlParser::getAction()) {
         $deleteLink->setConfirmationMessage('Are you sure?');
 
         $dd->addLink(new Link('Update', UrlParser::getUpdateLink(), 'fa fa-edit', ['class' => 'btn btn-sm btn-outline-warning']))
-            ->addLink(new Link('Access', "?module=10184&uid={$person->getIdVal()}", 'fa fa-lock'))
+            ->addLink(new Link('Access', "?module=person_permissions&uid={$person->getIdVal()}", 'fa fa-lock'))
             ->addLink(new Link('Mimic', '?module=' . UrlParser::getModule() . "&uid={$person->getIdVal()}&action=mimic", 'fa fa-user'))
             ->addLink(new Link('Reset Password', '?module=' . UrlParser::getModule() . "&action=reset_password&id={$person->getIdVal()}", 'fa fa-lock'))
             ->addLink($deleteLink);
@@ -356,7 +356,7 @@ SELECT * FROM (
         #$grid->addActionButton($deleteLink);
 
 
-        $grid->addActionButton(new ActionButton('Access', '?module=10184&uid={person_id}', 'fa fa-lock'));
+        $grid->addActionButton(new ActionButton('Access', '?module=person_permissions&uid={person_id}', 'fa fa-lock'));
         $grid->addActionButton(new ActionButton('Mimic', '?module=' . UrlParser::getModule() . '&uid={person_id}&action=mimic', 'fa fa-user'));
         $grid->addActionButton(new ActionButton('Reset Password', '?module=' . UrlParser::getModule() . '&action=reset_password&id={person_id}', 'fa fa-lock'));
         $grid->setSortDetails('person_id', 'ASC');

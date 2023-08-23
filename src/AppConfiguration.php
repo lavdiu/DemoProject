@@ -2,6 +2,8 @@
 
 namespace Lavdiu\DemoApp;
 
+use Laf\Database\Db;
+
 /**
  * Class AppConfiguration
  * @package Lavdiu\DemoApp
@@ -49,4 +51,27 @@ class AppConfiguration extends Base\BaseAppConfiguration
 	{
 		return parent::bOfind($keyValuePairs);
 	}
+
+    /**
+     * @throws \Exception
+     */
+    public static function getAllProperties(): array
+    {
+        $res = Db::getAllAssoc("SELECT * FROM app_configuration");
+        $tmp = [];
+        foreach ($res as $r) {
+            $tmp[$r['var_name']] = $r['var_value'];
+        }
+        return $tmp;
+    }
+
+    public static function hasProperty(string $property): bool
+    {
+        return array_key_exists($property, self::getAllProperties());
+    }
+
+    public static function getProperty(string $property): ?string
+    {
+        return self::getAllProperties()[$property] ?? null;
+    }
 }

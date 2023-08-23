@@ -2,7 +2,7 @@
 #### How to Set up:
 Clone the code to a local directory using:
 ```bash
-git clone git@github.com:lavdiu/DemoProject.git
+git clone https://github.com/lavdiu/DemoProject.git
 ```
 
 then, in PowerShell run:

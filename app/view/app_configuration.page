@@ -1,0 +1,156 @@
+<?php
+
+use Lavdiu\DemoApp\AppConfiguration;
+use Laf\UI\Component\Dropdown;
+use Laf\UI\Component\Link;
+use Laf\UI\Container\ContainerType;
+use Laf\UI\Form\DrawMode;
+use Laf\UI\Form\Form;
+use Laf\UI\Page\AdminPage;
+use Laf\Util\UrlParser;
+use Laf\UI\Container\HtmlContainer;
+use Laf\UI\Grid\PhpGrid\PhpGrid;
+use Laf\UI\Grid\PhpGrid\Column;
+use Laf\UI\Grid\PhpGrid\ActionButton;
+use Lavdiu\DemoApp\Factory;
+use Laf\UI\Container\Div;
+use Laf\UI\Container\TabContainer;
+use Laf\UI\Container\TabItem;
+
+$id = UrlParser::getId();
+$appconfiguration = new AppConfiguration($id);
+$form = $appconfiguration->getForm();
+
+$html = Factory::GeneralPage();
+$page = new AdminPage();
+
+$endpoint = AppConfiguration::getProperty('ASM_AL_EBILLS_HOST2');
+
+echo $endpoint;
+
+$page->setTitle("<a href='" . UrlParser::getListLink() . "' class='text-black text-decoration-none'>App Configuration</a>");
+$page->setTitleIcon('far fa-list-alt');
+
+
+if ($form->isSubmitted()) {
+    $id = $form->processForm();
+    UrlParser::redirectToViewPage($id);
+    exit;
+}
+
+switch (UrlParser::getAction()) {
+    case 'update':
+        $page->setContainerType(ContainerType::TYPE_DEFAULT);
+        $form->setDrawMode(DrawMode::UPDATE);
+
+
+        $form->setComponents([])
+        ->addComponent($appconfiguration->getIdFormElement())
+        ->addComponent($appconfiguration->getVarNameFormElement())
+        ->addComponent($appconfiguration->getVarValueFormElement())
+        ->addComponent($appconfiguration->getDescriptionFormElement());
+
+        $page->addComponent($form);
+
+        $page->addLink(new Link('Anulo', UrlParser::getViewLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+    case 'new':
+        $page->setContainerType(ContainerType::TYPE_DEFAULT);
+
+
+        $form->setComponents([])
+        ->addComponent($appconfiguration->getIdFormElement())
+        ->addComponent($appconfiguration->getVarNameFormElement())
+        ->addComponent($appconfiguration->getVarValueFormElement())
+        ->addComponent($appconfiguration->getDescriptionFormElement());
+
+        $form->setDrawMode(DrawMode::INSERT);
+        $page->addComponent($form);
+        $page->addLink(new Link('Anulo', UrlParser::getListLink(), 'fas fa-window-close', [], ['btn', 'btn-sm', 'btn-outline-success']));
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+    case 'delete':
+        if ($appconfiguration->recordExists()) {
+            if ($appconfiguration->canSoftDelete()) {
+                $appconfiguration->softDelete();
+            } else {
+                $appconfiguration->hardDelete();
+            }
+        }
+        UrlParser::redirectToListPage();
+        break;
+    case 'view':
+        $page->setContainerType(ContainerType::TYPE_DEFAULT);
+        $form->setDrawMode(DrawMode::VIEW);
+        $page->addComponent($form);
+        $page->addLink(new Link('Lista', UrlParser::getListLink(), 'far fa-list-alt', [], ['btn', 'btn-sm', 'btn-outline-success']));
+
+        $dd = new Dropdown('Veprime', '', 'fa fa-cogs', true);
+        $dd->addCssClass('btn-outline-success')
+            ->addCssClass('btn-sm');
+        $newLink = new Link('Ndrysho', UrlParser::getUpdateLink(), 'fa fa-edit', ['class' => 'btn btn-sm btn-outline-warning']);
+        $deleteLink = new Link('Fshij', UrlParser::getDeleteLink(), 'fa fa-trash', ['class' => 'btn btn-sm btn-outline-danger']);
+        $deleteLink->setConfirmationMessage('A jeni të sigurtë?');
+
+        $dd->addLink($newLink)
+            ->addLink($deleteLink);
+        $page->addLink($dd);
+        $html->addComponent($page);
+
+        echo $html->draw();
+        break;
+    case 'list':
+    default:
+        $grid = new PhpGrid('app_configuration_list');
+        $grid->setTitle('Lista')
+            ->setRowsPerPage(20)
+            ->setSqlQuery('
+SELECT * FROM (
+	SELECT
+		  `app_configuration`.`id` AS app_configuration_id
+		, `app_configuration`.`var_name` AS app_configuration_var_name
+		, `app_configuration`.`var_value` AS app_configuration_var_value
+		, `app_configuration`.`description` AS app_configuration_description
+		, `app_configuration`.`created_on` AS app_configuration_created_on
+		, `app_configuration`.`created_by` AS app_configuration_created_by
+		, `person`.`name` AS person_name
+		, `app_configuration`.`updated_on` AS app_configuration_updated_on
+		, `app_configuration`.`updated_by` AS app_configuration_updated_by
+		, `person_updated_by`.`name` AS person_updated_by_name
+	FROM app_configuration app_configuration
+	LEFT JOIN `person` `person` ON `app_configuration`.`created_by` = `person`.`id`
+	LEFT JOIN `person` `person_updated_by` ON `app_configuration`.`updated_by` = `person_updated_by`.`id`
+	WHERE 1=1 
+)l1 ');
+
+        $grid->addColumn(((new Column('app_configuration_id', 'Id', true, true, sprintf('?module=%s&action=view&id={app_configuration_id}', UrlParser::getModule())))->setInnerElementCssClass('btn btn-sm btn-outline-success'))->setOuterElementCssStyle('width:100px;'));
+        $grid->addColumn(new Column('app_configuration_var_name', 'Emri', true));
+        $grid->addColumn(new Column('app_configuration_var_value', 'Vlera', true));
+        $grid->addColumn(new Column('app_configuration_description', 'Pershkrimi', true));
+        $grid->addColumn(new Column('app_configuration_created_on', 'Regjistruar nga', false));
+        $grid->addColumn(new Column('app_configuration_created_by', 'Created ById', false));
+        $grid->addColumn(new Column('person_name', 'Regjistruar nga', false));
+        $grid->addColumn(new Column('app_configuration_updated_on', 'Ndryshuar me', false));
+        $grid->addColumn(new Column('app_configuration_updated_by', 'Updated ById', false));
+        $grid->addColumn(new Column('person_updated_by_name', 'Ndryshuar nga', false));
+
+        $grid->addActionButton(new ActionButton('Hape', sprintf('?module=%s&action=view&id={app_configuration_id}', UrlParser::getModule()), 'fa fa-eye'));
+        $grid->addActionButton(new ActionButton('Ndrysho', sprintf('?module=%s&action=update&id={app_configuration_id}', UrlParser::getModule()), 'fa fa-edit'));
+        $deleteLink = new ActionButton('Fshij', sprintf('?module=%s&action=delete&id={app_configuration_id}', UrlParser::getModule()), 'fa fa-trash');
+        $deleteLink->addAttribute('onclick', "return confirm('A jeni të sigurtë?')");
+        $grid->addActionButton($deleteLink);
+
+        if ($grid->isReadyToHandleRequests()) {
+            $grid->bootstrap();
+        }
+
+        $page->addComponent(new HtmlContainer($grid->draw()));
+        $page->addLink(new Link('Regjistro', UrlParser::getNewLink(), 'fa fa-plus-square', [], ['class' => 'btn btn-sm btn-outline-success']));
+        $page->setContainerType(ContainerType::TYPE_FLUID);
+        $html->addComponent($page);
+        echo $html->draw();
+        break;
+}

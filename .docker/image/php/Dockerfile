@@ -1,7 +1,7 @@
 FROM php:apache AS app_php
 
 ADD ./script/ /var/www/app_setup/script/
-ADD ./config/ /var/www/app_setup/config/
+#ADD ./config/ /var/www/app_setup/config/
 RUN chmod 755 /var/www/app_setup/script/*
 
 RUN /var/www/app_setup/script/set_timezone.sh

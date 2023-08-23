@@ -1,0 +1,151 @@
+<?php
+use Lavdiu\DemoApp\RoutingTable;
+use Lavdiu\DemoApp\Person;
+
+if (!isset($_GET['uid']) || !is_numeric($_GET['uid'])) {
+    header('location:?');
+    exit;
+
+}
+
+$uid = (int)filter_input(INPUT_GET, 'uid');
+if (isset($_POST['ruajPermissions'])) {
+    if (is_numeric($uid)) {
+        $person = new Person($uid);
+        $person->setModuletVal(join(',', $_POST['module']));
+        $person->store();
+    }
+}
+
+$person = new Person($uid);
+
+function checked($mid, $modulet)
+{
+
+    if (in_array($mid, $modulet))
+        return " checked='checked' ";
+    else return "";
+}
+
+
+?>
+
+<form method='post' action='?mod=<?php echo $_GET['mod']; ?>&uid=<?php echo $_GET['uid']; ?>'>
+	<div class='col-xs-12'>
+		<div class='panel panel-primary'>
+			<div class="panel-heading clearfix"><b>Të drejtat e shfrytëzuesit: <b><?php echo $person->getNameVal(); ?></b></b>
+
+				<div class='btn-group pull-right'>
+
+					<input type='submit' name='ruajPermissions' id='ruajPermissions' class='btn btn-sm btn-success' value='Ruaj ndryshimet'/>
+				</div>
+
+			</div>
+			<div class="panel-body" style='padding:15px;'>
+
+
+				<div class='form-group'>
+					<div class=' col-sm-10'>
+						<div class='checkbox'>
+							<label><input type='checkbox' name='module' value='' onchange='zgjedhiKrejt(this)'> <b>Zgjedhi të gjitha</b></label>
+						</div>
+					</div>
+				</div>
+
+
+				<br/>
+                <?php
+                $modulet = $person->getModuletArray();
+
+
+                $mod = new RoutingTable();
+                $mrA = $mod->listoKryesoret();
+                foreach ($mrA as $mr) {
+                    echo "
+	<div style=''>
+	<div class='form-group'>
+    <div class='col-sm-10'>
+      <div class='checkbox' style='margin:0;'>
+        <label><input type='checkbox' name='module[]' value='{$mr['id']}' readonly='readonly' rel='kryesore' " . checked($mr['id'], $modulet) . " onchange=\"kontrollo(this, {$mr['id']})\"> <b>{$mr['label']}</b>  &nbsp;<span class='label label-warning'>{$mr['id']}</span></label>
+      </div>
+    </div>
+  </div>
+	";
+
+                    $mod2 = new RoutingTable();
+                    $mr2A = $mod2->listoNenModuletMeHidden($mr['id']);
+                    foreach ($mr2A as $mr2) {
+                        $hidden = '';
+                        if ($mr2['is_visible'] == 0)
+                            $hidden = "<span class='label label-info'>[H]</span> ";
+                        echo "
+		<div class='form-group'>
+	    <div class='col-sm-offset-1 col-sm-10'>
+	      <div class='checkbox'  style='margin:0;'>
+	        <label><input type='checkbox' name='module[]' value='{$mr2['id']}' rel='nen' mainmod='{$mr['id']}' onchange=\"kontrollo(this, {$mr2['id']})\" " . checked($mr2['id'], $modulet) . "> {$hidden}{$mr2['label']}  &nbsp;<span class='label label-warning'>{$mr2['id']}</span></label>
+	      </div>
+	    </div>";
+
+                        $mod3 = new RoutingTable();
+                        $mr3A = $mod3->listoNenModuletMeHidden($mr2['id']);
+                        foreach ($mr3A as $mr3) {
+                            $hidden2 = '';
+                            if ($mr3['is_visible'] == 0)
+                                $hidden2 = "<span class='label label-info'>[H]</span> ";
+                            echo "
+				<div class='form-group'>
+			    <div class='col-sm-offset-2 col-sm-10'>
+			      <div class='checkbox'  style='margin:0;'>
+			        <label><input type='checkbox' name='module[]' value='{$mr3['id']}' rel='nen' mainmod='{$mr['id']}' mainmod2='{$mr2['id']}' " . checked($mr3['id'], $modulet) . "> {$hidden2}{$mr3['label']}   &nbsp;<span class='label label-warning'>{$mr3['id']}</span></label>
+			      </div>
+			    </div>
+			  </div>
+				";
+
+                        }
+
+                        echo "
+	  </div>
+		";
+
+                    }
+                    echo "</div>";
+
+                }
+
+
+                ?>
+
+
+			</div>
+
+			<div class='panel-footer' style='text-align:right;'>
+				<input type='submit' name='ruajPermissions' id='ruajPermissions' class='btn btn-success' value='Ruaj ndryshimet'/>
+			</div>
+
+		</div>
+	</div>
+</form>
+
+<script type='text/javascript'>
+    function kontrollo(fusha, id) {
+        var teGjithe = document.getElementsByTagName("input");
+        for (var i = 0; i <= teGjithe.length; i++) {
+            if (teGjithe[i].type == 'checkbox' && teGjithe[i].getAttribute('mainmod')) {
+                if (teGjithe[i].getAttribute('mainmod') == id || teGjithe[i].getAttribute('mainmod2') == id)
+                    teGjithe[i].checked = fusha.checked;
+            }
+        }
+    }
+
+
+    function zgjedhiKrejt(gjendja) {
+        var teGjithe = document.getElementsByTagName("input");
+        for (var i = 0; i <= teGjithe.length; i++) {
+            if (teGjithe[i].type == 'checkbox') {
+
+                teGjithe[i].checked = gjendja.checked;
+            }
+        }
+    }
+</script>
